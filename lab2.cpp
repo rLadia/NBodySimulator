@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <sstream>
 #include <cassert>
-#include "collidingspheres.h"
+#include "NBodySimulation.h"
 #include "movingsphere.h"
 #include "collision.h"
 #include "polynomial.h"
@@ -25,9 +25,10 @@ static const int BOUNDARYSIZE = 1000;
 
 //Fills the fields of sphere with information from the file
 //returns false if there was an error opening the file
-bool createSpheresFromFile(CollidingSpheres &, ifstream &);
+bool createSpheresFromFile(NBodySimulation &, ifstream &);
+bool createBlackHoleFromFile(NBodySimulation &, ifstream &);
 
-typedef CollidingSpheres::Record Record;
+typedef NBodySimulation::Record Record;
 
 //Prints out each sphere's index, its time of collision, and whether it was 
 //destroyed by colliding with a sphere or by hitting the boundary
@@ -47,14 +48,15 @@ int main()
   MovingSphere sphere;
   ifstream file(FILENAME);
   
-  CollidingSpheres logic(BOUNDARYSIZE);
-  if(!createSpheresFromFile(logic, file)) {
+  NBodySimulation simulation(BOUNDARYSIZE);
+  if(!createSpheresFromFile(simulation, file)) {
     cerr << "File was not successfully opened.\n";
     return EXIT_FAILURE;
   }
+  file.close();
 
-  vector<Record> results = logic.calculateEliminations();
-  printCollisionResults(results);
+  //vector<Record> results = simulation.calculateEliminations();
+  //printCollisionResults(results);
 
   return EXIT_SUCCESS;
 }
@@ -72,14 +74,13 @@ void printCollisionResults(const vector<Record> &results)
   cout << "Index    Time (s)    Event type" << endl;
   cout << "-----    --------    ----------" << endl;
   
+  string collision_name[] = { "Collision", "Black Hole", "Boundary" };
+
   vector<Record>::const_iterator i;
   for(i = results.begin(); i != results.end(); ++i) {
     cout << center(numberToString(i->index), INDEXWIDTH).c_str();
     cout << center(numberToString(i->time), TIMEWIDTH).c_str();
-    if(i->isSphereCollision)
-      cout << "Collision";
-    else
-      cout << "Boundary"; 
+    cout << collision_name[i->collision];
     cout << endl;
   }
 }
@@ -108,21 +109,38 @@ string numberToString(int number)
   return ss.str();
 }
 
-//Uses the information from the file to create spheres in CollidingSpheres
-bool createSpheresFromFile(CollidingSpheres &logic, ifstream &file)
+//Uses the information from the file to create spheres in NBodySimulation
+//*TODO* handle errors from incorrect file format
+bool createBodiesFromFile(NBodySimulation &simulation, ifstream &file)
 {
- if(!file.is_open())
+  if(!file.is_open())
    return false; //file was not able to be read
 
-  //*TODO* handle errors from incorrect file format
-  int x, y, z, r, vx, vy, vz;
-  while(file.good()) {
-    file >> x >> y >> z >> r >> vx >> vy >> vz;
+  createBlackHoleFromFile(simulation, file);
+
+  do { //read rest of bodies
+    string c;
+    int x, y, z, r, vx, vy, vz;
+
+    file >> c >> x >> y >> z >> r >> vx >> vy >> vz;
+
     if(file.fail())
        break;
-    logic.addSphere(Vector3(x, y, z), r, Vector3(vx, vy, vz));
-  }
-  file.close();
+
+    Color::Color color = Color::toColor(c);
+    simulation.addBody(color, Vector3(x, y, z), r, Vector3(vx, vy, vz));
+  } while(file.good());
+  
   return true;
 }
 
+bool createBlackHoleFromFile(NBodySimulation &simulation, ifstream &file)
+{
+  int x, y, z, m;
+  file >> x >> y >> z >> m;
+  if(file.fail()) 
+    return false; // file could not be read
+
+  simulation.addBlackHole(Vector3(x, y, z), m);
+  return true;
+}
