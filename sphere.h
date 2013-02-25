@@ -6,7 +6,7 @@
 #include <cmath>
 
 #include "nvector.h"
-typedef NVector<int,3> Vector3;
+typedef NVector<double,3> Vector3;
 
 class Sphere {
   protected:
