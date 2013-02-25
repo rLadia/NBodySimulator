@@ -16,6 +16,9 @@ class MovingSphere : public Sphere {
   // adds the given vector to the internal vector
   void transform(const Vector3 &);
 
+  // modifies the position based on the current velocity
+  void advance(const double); 
+
   //setters
   void setVelocity(int, int, int);
   void setVelocity(const Vector3 &);

@@ -12,6 +12,10 @@ MovingSphere::MovingSphere(const Vector3 &position, int radius, const Vector3 &v
   radius_ = radius;
 }
 
+void MovingSphere::advance(const double time) {
+  center_.transform(velocity_);
+}
+
 void MovingSphere::transform(const Vector3 &vector) {
   velocity_.transform(vector);
 }
