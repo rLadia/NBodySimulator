@@ -7,6 +7,7 @@
 #include <limits>
 #include <algorithm>
 
+#include "color.h"
 #include "collision.h"
 #include "gravity.h"
 #include "simulatedbody.h"
@@ -49,18 +50,19 @@ public:
   NBodySimulation(unsigned int); //boundary size
 
 private:
-  //associates a sphere with an index value
-  struct IndexedBody {
+  //associates a body with an index value and color
+  struct ManagedBody {
     int index;
     SimulatedBody body;
+    Color::Color color;
   };
-
+  
   //contains information about the time and participants in a collision
   //Natural sorting will order the elements by the time of collision
   struct Collision {
     double time;
-    const IndexedBody* left;
-    const IndexedBody* right;
+    const ManagedBody* left;
+    const ManagedBody* right;
 
     bool operator< (const Collision &rhs) {
       return time < rhs.time;
@@ -78,9 +80,13 @@ private:
   std::list<Collision> collisions_; 
 
   //contains the list of bodies to be simulated
-  std::list<IndexedBody> bodies_;
+  std::list<ManagedBody> bodies_;
   std::list<SimulatedBody> black_holes_;
-  std::list<IndexedBody> black_bodies_;
+  std::list<MovingSphere> massless_bodies_;
+
+  typedef std::list<NBodySimulation::ManagedBody>::iterator ManagedBodyIterator;
+  typedef std::list<SimulatedBody>::iterator SimulatedBodyIterator;
+  typedef std::list<MovingSphere>::iterator MasslessBodyIterator;
 
   void calculateForcesFromSpheres();
   void calculateForcesFromBlackHoles();
@@ -93,7 +99,7 @@ private:
 
   //returns the sphere with the smaller radius
   //if the radii are the same, it returns the first argument
-  static const IndexedBody* smallerSphere(const IndexedBody*, const IndexedBody*);
+  static const ManagedBody* smallerSphere(const ManagedBody*, const ManagedBody*);
 
   //Iterates through the list and returns the smallest, positive value
   static double smallestTime(const std::vector<double>&);
@@ -107,7 +113,7 @@ private:
   //pre: sphere1 is non-null, sphere2 is null if the sphere is colliding with 
   //  the boundary
   //post: collisions_ appended with collisions from two input spheres
-  void calculateCollision(const IndexedBody*, const IndexedBody*);
+  void calculateCollision(const ManagedBody*, const ManagedBody*);
 
   //Compares each sphere with every other sphere and the boundary. All 
   //collisions detected by these comparisions will be added to collisions_.
@@ -136,7 +142,7 @@ private:
   //
   //return: the sphere added to the list of elimination records
   //post: records_ appended with the time, index and type of collision
-  const IndexedBody* addEliminationRecord(const Collision &);
+  const ManagedBody* addEliminationRecord(const Collision &);
 
   //do not make a copy of this class
   NBodySimulation(const NBodySimulation &);
