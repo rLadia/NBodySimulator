@@ -37,14 +37,14 @@ class NVector
   NVector<T, D>& operator*=(const double);
   NVector<T, D>& operator*=(const int);
 
-  const NVector<T, D> operator*(const double);
-  const NVector<T, D> operator*(const int);
+  const NVector<T, D> operator*(const double) const;
+  const NVector<T, D> operator*(const int) const;
   
   NVector<T, D>& operator+=(const NVector<T, D> &);
-  const NVector<T, D> operator+(const NVector<T, D> &);
+  const NVector<T, D> operator+(const NVector<T, D> &) const;
 
   NVector<T, D> & operator-=(const NVector<T, D> &);
-  const NVector<T, D> operator-(const NVector<T, D> &);
+  const NVector<T, D> operator-(const NVector<T, D> &) const;
 };
 
 template<typename T, size_t D>
@@ -143,7 +143,7 @@ NVector<T, D>& NVector<T, D>::operator*=(const double scalar)
 }
 
 template<typename T, size_t D>
-const NVector<T, D> NVector<T, D>::operator*(const double scalar) 
+const NVector<T, D> NVector<T, D>::operator*(const double scalar) const
 {
   NVector<T, D> result = *this;
   result *= scalar;
@@ -159,10 +159,10 @@ NVector<T, D>& NVector<T, D>::operator*=(const int scalar)
 }
 
 template<typename T, size_t D>
-const NVector<T, D> NVector<T, D>::operator*(const int scalar) 
+const NVector<T, D> NVector<T, D>::operator*(const int scalar) const
 {
   NVector<T, D> result = *this;
-  result *= rhs;
+  result *= scalar;
   return result;
 }
 
@@ -175,7 +175,7 @@ NVector<T, D>& NVector<T, D>::operator+=(const NVector<T, D> &rhs)
 }
 
 template<typename T, size_t D>
-const NVector<T, D> NVector<T, D>::operator+(const NVector<T, D> &rhs)
+const NVector<T, D> NVector<T, D>::operator+(const NVector<T, D> &rhs) const
 {
   NVector<T, D> result = *this;
   result += rhs;
@@ -191,7 +191,7 @@ NVector<T, D>& NVector<T, D>::operator-=(const NVector<T, D> &rhs)
 }
 
 template<typename T, size_t D>
-const NVector<T, D> NVector<T, D>::operator-(const NVector<T, D> &rhs) 
+const NVector<T, D> NVector<T, D>::operator-(const NVector<T, D> &rhs) const
 {
   NVector<T, D> result = *this;
   result -= rhs;
