@@ -11,7 +11,7 @@ void NBodySimulation::addBody(Color::Color color, const Vector3& center,
   int radius, const Vector3& velocity)
 {
   SimulatedBody body = SimulatedBody(color, center, radius, velocity);
-  IndexedSphere indexed_body = { index_, body };
+  IndexedBody indexed_body = { index_, body };
   
   if(color == Color::Color::kBlack)
     black_bodies_.push_back(indexed_body);
@@ -29,11 +29,63 @@ void NBodySimulation::addBlackHole(const Vector3& center, int mass)
   black_holes_.push_back(black_hole);
 }
 
-void NBodySimulation::advance(double time) {
-  //time_ += time;
+void NBodySimulation::advance(double t) {
+  time_ += t;
+  //calculateForceFromSpheres()
+  //calculateForceFromBlackHoles()
   //calculate force on each sphere
   //modify velocity on each sphere
   //
+}
+
+
+//n^2 iteration calculating and applying the forc
+void NBodySimulation::calculateForcesFromSpheres() 
+{
+  if(bodies_.size() <= 0) //no spheres to check collisions with
+  return;
+  typedef std::list<NBodySimulation::IndexedBody>::iterator Iter;
+
+  resetForces(); //start from 0
+
+  Iter i = bodies_.begin();
+  do {
+    Iter j = i; //not necessary to start at beginning
+
+    //Spheres cannot collide with themselves
+    for(j++; j != bodies_.end(); ++j) {
+      updateForce(i->body, j->body);
+    }
+    i++;
+  } while(i != bodies_.end());
+}
+
+void NBodySimulation::calculateForcesFromBlackHoles()
+{
+  typedef std::list<NBodySimulation::IndexedBody>::iterator Iter;
+  typedef std::list<SimulatedBody>::iterator SIter;
+  for(Iter i = bodies_.begin(); i != bodies_.end(); ++i) {
+    for(SIter j = black_holes_.begin(); j != black_holes_.end(); ++j)
+      updateForce(i->body, *j);
+  }
+}
+
+void NBodySimulation::updateForce(SimulatedBody &b1, SimulatedBody &b2)
+{
+  Gravity::PointMass m1 = { b1.getMass(), b1.getCenter() };
+  Gravity::PointMass m2 = { b2.getMass(), b2.getCenter() };
+
+  Vector3 force = Gravity::force(m1, m2, GRAVITY);
+  b1.setForce(b1.getForce() + force);
+  b2.setForce(b2.getForce() + force * -1);
+}
+
+
+void NBodySimulation::resetForces() 
+{
+  typedef std::list<NBodySimulation::IndexedBody>::iterator Iter;
+  for(Iter i = bodies_.begin(); i != bodies_.end(); ++i)
+    i->body.setForce(Vector3(0,0,0));
 }
 
 /*
