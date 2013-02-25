@@ -15,7 +15,7 @@
 //accepts a groups of spheres and calculates when they collide
 //will destroy the smaller sphere when it collides
 
-static const double INTERVAL = 0.1;
+static const double TIMEINTERVAL = 0.1;
 static const int GRAVITY = 10;
 
 class NBodySimulation {
@@ -46,6 +46,9 @@ public:
   //return: vector containing the information about all of the collisions
   //  that have occurred so far
   std::vector<Record> getSimulationResults();
+
+  // runs the simulation until all spheres are dead
+  void runSimulation(); 
 
   NBodySimulation(unsigned int); //boundary size
 
@@ -82,11 +85,13 @@ private:
   //contains the list of bodies to be simulated
   std::list<ManagedBody> bodies_;
   std::list<SimulatedBody> black_holes_;
-  std::list<MovingSphere> massless_bodies_;
+  std::list<ManagedBody> massless_bodies_;
 
   typedef std::list<NBodySimulation::ManagedBody>::iterator ManagedBodyIterator;
   typedef std::list<SimulatedBody>::iterator SimulatedBodyIterator;
   typedef std::list<MovingSphere>::iterator MasslessBodyIterator;
+
+  typedef Color::Color Color;
 
   void calculateForcesFromSpheres();
   void calculateForcesFromBlackHoles();
@@ -96,6 +101,8 @@ private:
 
   // sets all of the forces in the bodies to 0
   void resetForces();
+
+  const ManagedBody* determineResult(const ManagedBody &, const ManagedBody &);
 
   //returns the sphere with the smaller radius
   //if the radii are the same, it returns the first argument
@@ -120,7 +127,7 @@ private:
   //
   //post: collisions_ appended with all possible collisions made between 
   //  spheres and the boundary
-  void calculateAllCollisions();
+  void findAllOverlaps();
 
   //Iterates through the list of collisions and records the eliminations that 
   //result. Once a sphere has been eliminated, this function removes all future
