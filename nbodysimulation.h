@@ -7,11 +7,16 @@
 #include <limits>
 #include <algorithm>
 
-#include "simulatedbody.h"
 #include "collision.h"
+#include "gravity.h"
+#include "simulatedbody.h"
 
 //accepts a groups of spheres and calculates when they collide
 //will destroy the smaller sphere when it collides
+
+static const double INTERVAL = 0.1;
+static const int GRAVITY = 10;
+
 class NBodySimulation {
 public:
   enum CollisionType {
@@ -45,7 +50,7 @@ public:
 
 private:
   //associates a sphere with an index value
-  struct IndexedSphere {
+  struct IndexedBody {
     int index;
     SimulatedBody body;
   };
@@ -54,16 +59,12 @@ private:
   //Natural sorting will order the elements by the time of collision
   struct Collision {
     double time;
-    const IndexedSphere* left;
-    const IndexedSphere* right;
+    const IndexedBody* left;
+    const IndexedBody* right;
 
     bool operator< (const Collision &rhs) {
       return time < rhs.time;
     }
-
-    Collision(double t, const IndexedSphere* l, const IndexedSphere* r) 
-      : time(t), left(l), right(r)
-    {}
   };
 
   unsigned int boundary_; //the length of the bounding cube
@@ -77,13 +78,22 @@ private:
   std::list<Collision> collisions_; 
 
   //contains the list of bodies to be simulated
-  std::list<IndexedSphere> bodies_;
+  std::list<IndexedBody> bodies_;
   std::list<SimulatedBody> black_holes_;
-  std::list<IndexedSphere> black_bodies_;
+  std::list<IndexedBody> black_bodies_;
+
+  void calculateForcesFromSpheres();
+  void calculateForcesFromBlackHoles();
+
+  //updates the acceleration of each body 
+  void updateForce(SimulatedBody &, SimulatedBody &);
+
+  // sets all of the forces in the bodies to 0
+  void resetForces();
 
   //returns the sphere with the smaller radius
   //if the radii are the same, it returns the first argument
-  static const IndexedSphere* smallerSphere(const IndexedSphere*, const IndexedSphere*);
+  static const IndexedBody* smallerSphere(const IndexedBody*, const IndexedBody*);
 
   //Iterates through the list and returns the smallest, positive value
   static double smallestTime(const std::vector<double>&);
@@ -97,7 +107,7 @@ private:
   //pre: sphere1 is non-null, sphere2 is null if the sphere is colliding with 
   //  the boundary
   //post: collisions_ appended with collisions from two input spheres
-  void calculateCollision(const IndexedSphere*, const IndexedSphere*);
+  void calculateCollision(const IndexedBody*, const IndexedBody*);
 
   //Compares each sphere with every other sphere and the boundary. All 
   //collisions detected by these comparisions will be added to collisions_.
@@ -126,7 +136,7 @@ private:
   //
   //return: the sphere added to the list of elimination records
   //post: records_ appended with the time, index and type of collision
-  const IndexedSphere* addEliminationRecord(const Collision &);
+  const IndexedBody* addEliminationRecord(const Collision &);
 
   //do not make a copy of this class
   NBodySimulation(const NBodySimulation &);
