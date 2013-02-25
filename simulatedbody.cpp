@@ -4,13 +4,21 @@ SimulatedBody::SimulatedBody()
 {}
 
 //mass = radius
-SimulatedBody::SimulatedBody(Color color, const Vector3 &position, int radius, const Vector3 &velocity) 
+SimulatedBody::SimulatedBody(const Vector3 &position, int radius, const Vector3 &velocity) 
 {
-  color_ = color;
   center_ = position;
   velocity_ = velocity;
   radius_ = radius;
   mass_ = radius;
+}
+
+//Modifies position and velocity based on current velocity and acceleration
+//*TODO* assert( ||v|| < c )
+void SimulatedBody::advance(const double time) {
+  center_ += velocity_ * time;
+  center_ += acceleration_ * 0.5 * time * time; // 1/2 * a * t^2
+
+  velocity_ += acceleration_ * time; // v(t) = v(0) + at
 }
 
 //Setters
@@ -30,11 +38,6 @@ void SimulatedBody::setForce(const Vector3& force)
 }
 
 //Getters
-Color::Color SimulatedBody::getColor() const 
-{
-  return color_;
-}
-
 int SimulatedBody::getMass() const 
 {
   return mass_;
