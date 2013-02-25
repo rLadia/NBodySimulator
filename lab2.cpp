@@ -25,7 +25,7 @@ static const int BOUNDARYSIZE = 1000;
 
 //Fills the fields of sphere with information from the file
 //returns false if there was an error opening the file
-bool createSpheresFromFile(NBodySimulation &, ifstream &);
+bool createBodiesFromFile(NBodySimulation &, ifstream &);
 bool createBlackHoleFromFile(NBodySimulation &, ifstream &);
 
 typedef NBodySimulation::Record Record;
@@ -49,7 +49,7 @@ int main()
   ifstream file(FILENAME);
   
   NBodySimulation simulation(BOUNDARYSIZE);
-  if(!createSpheresFromFile(simulation, file)) {
+  if(!createBodiesFromFile(simulation, file)) {
     cerr << "File was not successfully opened.\n";
     return EXIT_FAILURE;
   }
@@ -116,7 +116,8 @@ bool createBodiesFromFile(NBodySimulation &simulation, ifstream &file)
   if(!file.is_open())
    return false; //file was not able to be read
 
-  createBlackHoleFromFile(simulation, file);
+  if(!createBlackHoleFromFile(simulation, file))
+    return false; // could not read black hole
 
   do { //read rest of bodies
     string c;
