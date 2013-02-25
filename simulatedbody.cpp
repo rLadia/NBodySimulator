@@ -4,12 +4,13 @@ SimulatedBody::SimulatedBody()
 {}
 
 //mass = radius
-SimulatedBody::SimulatedBody(const Vector3 &position, int radius, const Vector3 &velocity) 
+SimulatedBody::SimulatedBody(const Vector3 &position, int radius, const Vector3 &velocity, const Vector3 &acceleration, int mass)
 {
   center_ = position;
-  velocity_ = velocity;
   radius_ = radius;
-  mass_ = radius;
+  velocity_ = velocity;
+  acceleration_ = acceleration;
+  mass_ = mass;
 }
 
 //Modifies position and velocity based on current velocity and acceleration

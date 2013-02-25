@@ -12,8 +12,8 @@ public:
   //default ctor
   SimulatedBody();
 
-  //sets the mass equal to the radius
-  SimulatedBody(const Vector3 &, int, const Vector3 &);
+  //location, radius, velocity, acceleration, mass
+  SimulatedBody(const Vector3 &, int, const Vector3 &, const Vector3 &, int);
 
   // advances position based on current velocity, acceleration and force
   // using the kinematic forumlas: 
