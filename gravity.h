@@ -9,7 +9,7 @@ namespace Gravity {
 
   struct PointMass {
     int mass;
-    NVector<int, 3> location;
+    NVector<double, 3> location;
   };
 
   NVector<double, 3> force(PointMass, PointMass);
