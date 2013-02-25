@@ -10,8 +10,8 @@ NBodySimulation::NBodySimulation(unsigned int boundary)
 void NBodySimulation::addBody(Color::Color color, const Vector3& center,
   int radius, const Vector3& velocity)
 {
-  SimulatedBody body = SimulatedBody(color, center, radius, velocity);
-  IndexedBody indexed_body = { index_, body };
+  SimulatedBody body = SimulatedBody(center, radius, velocity);
+  ManagedBody indexed_body = { index_, body, color };
   
   if(color == Color::Color::kBlack)
     black_bodies_.push_back(indexed_body);
@@ -29,8 +29,14 @@ void NBodySimulation::addBlackHole(const Vector3& center, int mass)
   black_holes_.push_back(black_hole);
 }
 
-void NBodySimulation::advance(double t) {
-  time_ += t;
+void NBodySimulation::advance(double time) {
+  time_ += time;
+  for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
+    i->body.advance(time);
+  }
+  for(MasslessBodyIterator i = massless_bodies_.begin(); i != massless_bodies_.end(); ++i) {
+    i->advance(time);
+  }
   //calculateForceFromSpheres()
   //calculateForceFromBlackHoles()
   //calculate force on each sphere
@@ -44,15 +50,14 @@ void NBodySimulation::calculateForcesFromSpheres()
 {
   if(bodies_.size() <= 0) //no spheres to check collisions with
   return;
-  typedef std::list<NBodySimulation::IndexedBody>::iterator Iter;
 
   resetForces(); //start from 0
 
-  Iter i = bodies_.begin();
+  ManagedBodyIterator i = bodies_.begin();
   do {
-    Iter j = i; //not necessary to start at beginning
+    ManagedBodyIterator j = i; //not necessary to start at beginning
 
-    //Spheres cannot collide with themselves
+    //Spheres do not interact with themselves
     for(j++; j != bodies_.end(); ++j) {
       updateForce(i->body, j->body);
     }
@@ -62,10 +67,8 @@ void NBodySimulation::calculateForcesFromSpheres()
 
 void NBodySimulation::calculateForcesFromBlackHoles()
 {
-  typedef std::list<NBodySimulation::IndexedBody>::iterator Iter;
-  typedef std::list<SimulatedBody>::iterator SIter;
-  for(Iter i = bodies_.begin(); i != bodies_.end(); ++i) {
-    for(SIter j = black_holes_.begin(); j != black_holes_.end(); ++j)
+  for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
+    for(SimulatedBodyIterator j = black_holes_.begin(); j != black_holes_.end(); ++j)
       updateForce(i->body, *j);
   }
 }
@@ -83,8 +86,8 @@ void NBodySimulation::updateForce(SimulatedBody &b1, SimulatedBody &b2)
 
 void NBodySimulation::resetForces() 
 {
-  typedef std::list<NBodySimulation::IndexedBody>::iterator Iter;
-  for(Iter i = bodies_.begin(); i != bodies_.end(); ++i)
+  typedef std::list<NBodySimulation::ManagedBody>::iterator ManagedBodyIterator;
+  for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i)
     i->body.setForce(Vector3(0,0,0));
 }
 
@@ -98,7 +101,7 @@ std::vector<NBodySimulation::Record> NBodySimulation::calculateEliminations()
   return records_;
 }
 
-//Iterates through list of all collisions and records only the ones that result
+//ManagedBodyIteratorates through list of all collisions and records only the ones that result
 //in eliminations.
 void NBodySimulation::recordEliminations()
 {
@@ -175,14 +178,14 @@ void NBodySimulation::calculateAllCollisions()
 {
   if(bodies_.size() <= 0) //no spheres to check collisions with
     return;
-  typedef std::list<NBodySimulation::IndexedSphere*>::iterator Iter;
+  typedef std::list<NBodySimulation::IndexedSphere*>::iterator ManagedBodyIterator;
 
-  Iter i = bodies_.begin();
+  ManagedBodyIterator i = bodies_.begin();
   do {
     //add the collision with the boundary
     calculateCollision(*i, NULL);
 
-    Iter j = i; //not necessary to start at beginning
+    ManagedBodyIterator j = i; //not necessary to start at beginning
 
     //Spheres cannot collide with themselves
     for(j++; j != bodies_.end(); ++j) {
