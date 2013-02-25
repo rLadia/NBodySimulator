@@ -11,7 +11,10 @@ class MovingSphere : public Sphere {
 
   public:
   MovingSphere();
-  MovingSphere(const Vector3 &, int, const Vector3 &); 
+  MovingSphere(const Vector3 &, int, const Vector3 &);
+
+  // adds the given vector to the internal vector
+  void transform(const Vector3 &);
 
   //setters
   void setVelocity(int, int, int);
