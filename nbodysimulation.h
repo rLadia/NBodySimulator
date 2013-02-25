@@ -33,11 +33,13 @@ public:
   //adds a black hole to the bodies to be simulated
   void addBlackHole(const Vector3 &, int);
 
-  //Will do an n^2 traversal through the list of simulated spheres calculating
-  //the time and type of collisions for each one.
-  //
+  //will remove bodies as they collide
+  //stop when bodies are stable?
+  //void simulate(); //advance the simulation until no more bodies exist
+
   //return: vector containing the information about all of the collisions
-  std::vector<Record> calculateEliminations();
+  //  that have occurred so far
+  std::vector<Record> getSimulationResults();
 
   NBodySimulation(unsigned int); //boundary size
 
@@ -66,6 +68,7 @@ private:
 
   unsigned int boundary_; //the length of the bounding cube
   unsigned int index_; //current sphere index
+  double time_; //current time of the simulation
 
   //contains the list of eliminations caused by collisions
   std::vector<Record> records_;
@@ -76,6 +79,7 @@ private:
   //contains the list of bodies to be simulated
   std::list<IndexedSphere> bodies_;
   std::list<SimulatedBody> black_holes_;
+  std::list<IndexedSphere> black_bodies_;
 
   //returns the sphere with the smaller radius
   //if the radii are the same, it returns the first argument
@@ -83,6 +87,8 @@ private:
 
   //Iterates through the list and returns the smallest, positive value
   static double smallestTime(const std::vector<double>&);
+
+  void advance(double); // advances the simulation by the time period given
 
   //Calculates the collision times between the two spheres and adds the
   //soonest one. If the second argument is null, it calculates the time it

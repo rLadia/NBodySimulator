@@ -3,7 +3,7 @@
 typedef NBodySimulation::Record Record;
 
 NBodySimulation::NBodySimulation(unsigned int boundary) 
-  : index_(1), boundary_(boundary)
+  : index_(1), boundary_(boundary), time_(0)
 {}
 
 //appends the internal list of spheres with the given attributes of a sphere
@@ -12,8 +12,12 @@ void NBodySimulation::addBody(Color::Color color, const Vector3& center,
 {
   SimulatedBody body = SimulatedBody(color, center, radius, velocity);
   IndexedSphere indexed_body = { index_, body };
+  
+  if(color == Color::Color::kBlack)
+    black_bodies_.push_back(indexed_body);
+  else
+     bodies_.push_back(indexed_body);
   index_++;
-  bodies_.push_back(indexed_body);
 }
 
 //assigns the properties to the black hole and adds it to the list of black holes
@@ -25,6 +29,14 @@ void NBodySimulation::addBlackHole(const Vector3& center, int mass)
   black_holes_.push_back(black_hole);
 }
 
+void NBodySimulation::advance(double time) {
+  //time_ += time;
+  //calculate force on each sphere
+  //modify velocity on each sphere
+  //
+}
+
+/*
 //Returns a vector of records detailing how and when the spheres collided
 std::vector<NBodySimulation::Record> NBodySimulation::calculateEliminations()
 {
@@ -34,7 +46,6 @@ std::vector<NBodySimulation::Record> NBodySimulation::calculateEliminations()
   return records_;
 }
 
-/*
 //Iterates through list of all collisions and records only the ones that result
 //in eliminations.
 void NBodySimulation::recordEliminations()
