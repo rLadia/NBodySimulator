@@ -84,7 +84,7 @@ template<typename T, size_t D>
 T NVector<T, D>::dotProduct(const NVector<T, D>& NVector1, const NVector<T, D>& NVector2) {
   T sum = 0;
   for(int i = 0; i < D; ++i)
-    sum = NVector1.val_[i] * NVector2.val_[i];
+    sum += NVector1.val_[i] * NVector2.val_[i];
   return sum;
 }
 
