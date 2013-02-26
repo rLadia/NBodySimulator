@@ -55,8 +55,9 @@ int main()
   }
   file.close();
 
-  //vector<Record> results = simulation.calculateEliminations();
-  //printCollisionResults(results);
+  simulation.runSimulation();
+  vector<Record> results = simulation.getSimulationResults();
+  printCollisionResults(results);
 
   return EXIT_SUCCESS;
 }
