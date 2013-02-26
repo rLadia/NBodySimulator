@@ -15,7 +15,7 @@
 //accepts a groups of spheres and calculates when they collide
 //will destroy the smaller sphere when it collides
 
-static const double TIMEINTERVAL = 0.1;
+static const double TIMEINTERVAL = .001;
 static const int GRAVITY = 10;
 
 class NBodySimulation {
@@ -102,7 +102,8 @@ private:
   // sets all of the forces in the bodies to 0
   void resetForces();
 
-  const ManagedBody* determineResult(const ManagedBody &, const ManagedBody &);
+  bool isOverlappingBoundary(const Sphere &);
+  void removeSmallerBody(ManagedBodyIterator, ManagedBodyIterator);
 
   //returns the sphere with the smaller radius
   //if the radii are the same, it returns the first argument
@@ -112,6 +113,9 @@ private:
   static double smallestTime(const std::vector<double>&);
 
   void advance(double); // advances the simulation by the time period given
+
+  //body, time, type
+  void recordEvent(const ManagedBody&, int, CollisionType);
 
   //Calculates the collision times between the two spheres and adds the
   //soonest one. If the second argument is null, it calculates the time it
