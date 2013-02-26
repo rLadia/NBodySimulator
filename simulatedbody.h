@@ -12,7 +12,7 @@ public:
   //default ctor
   SimulatedBody();
 
-  //location, radius, velocity, acceleration, mass
+  //location, radius, velocity, force, mass
   SimulatedBody(const Vector3 &, int, const Vector3 &, const Vector3 &, int);
 
   // advances position based on current velocity, acceleration and force
@@ -23,17 +23,14 @@ public:
 
   //setters
   void setMass(int);
-  void setAcceleration(const Vector3 &);
   void setForce(const Vector3 &);
 
   //getters
   int getMass() const;
-  Vector3 getAcceleration() const;
   Vector3 getForce() const;
 
 private:
   Vector3 force_;
-  Vector3 acceleration_;
   int mass_;
 };
 
