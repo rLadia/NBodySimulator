@@ -8,8 +8,15 @@
 //Namespace holding common functions useful for collsion detection
 //currently limited to collisions between spheres
 namespace COLLISION {
+  typedef NVector<double, 3> Point;
+  typedef NVector<double, 3> Plane;
+
   //return: true if the two spheres are overlapping or touching
   bool isOverlapping(const Sphere&, const Sphere&);
+
+  bool isOverlapping(const Sphere&, const Point&);
+
+  bool isOverlapping(const Sphere&, const Plane&);
 
   //return: the distance between two spheres using the distance formula
   //  d = sqrt( (xi2 - xi1)^2 )
