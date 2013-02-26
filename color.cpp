@@ -3,7 +3,7 @@
 Color::Color Color::toColor(const std::string &string)
 {
   std::string in = string;
-  std::transform(in.begin(), in.end(), in.begin(), ::tolower); //conver to lower case
+  std::transform(in.begin(), in.end(), in.begin(), ::tolower); //convert to lower case
 
   if(in == "black")
     return Color::kBlack;
