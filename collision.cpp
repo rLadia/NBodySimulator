@@ -6,6 +6,11 @@ bool COLLISION::isOverlapping(const Sphere& left, const Sphere& right){
     <= left.getRadius() + right.getRadius();
 }
 
+//Returns whether the point exists within the sphere
+bool COLLISION::isOverlapping(const Sphere& left, const COLLISION::Point& right){
+  return distance(left.getCenter(), right) <= left.getRadius();
+}
+
 //sqrt( (x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2 )
 double COLLISION::distance(const Vector3 &a, const Vector3 &b) 
 {
