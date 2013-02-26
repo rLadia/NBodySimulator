@@ -10,13 +10,17 @@ NBodySimulation::NBodySimulation(unsigned int boundary)
 void NBodySimulation::addBody(Color::Color color, const Vector3& center,
   int radius, const Vector3& velocity)
 {
-  SimulatedBody body = SimulatedBody(center, radius, velocity);
+  // initializes with acceleration of 0 and mass equal to radius
+  SimulatedBody body = 
+    SimulatedBody(center, radius, velocity, Vector3(0,0,0), radius);
+
   ManagedBody indexed_body = { index_, body, color };
   
   if(color == Color::Color::kBlack)
-    black_bodies_.push_back(indexed_body);
+    massless_bodies_.push_back(indexed_body);
   else
      bodies_.push_back(indexed_body);
+
   index_++;
 }
 
@@ -29,21 +33,31 @@ void NBodySimulation::addBlackHole(const Vector3& center, int mass)
   black_holes_.push_back(black_hole);
 }
 
+// calculates the forces for the current frame and advances the spheres by the 
+// given time interval
 void NBodySimulation::advance(double time) {
-  time_ += time;
+  
+  calculateForcesFromSpheres();
+  calculateForcesFromBlackHoles();
+
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
     i->body.advance(time);
   }
-  for(MasslessBodyIterator i = massless_bodies_.begin(); i != massless_bodies_.end(); ++i) {
-    i->advance(time);
+  for(ManagedBodyIterator i = massless_bodies_.begin(); i != massless_bodies_.end(); ++i) {
+    i->body.advance(time);
   }
-  //calculateForceFromSpheres()
-  //calculateForceFromBlackHoles()
-  //calculate force on each sphere
-  //modify velocity on each sphere
-  //
+
+  time_ += time;
 }
 
+void NBodySimulation::calculateForcesFromBlackHoles() 
+{
+  for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
+    for(SimulatedBodyIterator j = black_holes_.begin(); j != black_holes_.end(); ++j) {
+      updateForce(i->body, *j); // calculates force between each sphere and black hole
+    }
+  }
+}
 
 //n^2 iteration calculating and applying the forc
 void NBodySimulation::calculateForcesFromSpheres() 
@@ -91,15 +105,63 @@ void NBodySimulation::resetForces()
     i->body.setForce(Vector3(0,0,0));
 }
 
-/*
-//Returns a vector of records detailing how and when the spheres collided
-std::vector<NBodySimulation::Record> NBodySimulation::calculateEliminations()
+//Returns a vector of records detailing how and when the bodies collided
+std::vector<NBodySimulation::Record> NBodySimulation::getSimulationResults()
 {
-  records_.clear();
-  calculateAllCollisions();
-  recordEliminations();
   return records_;
 }
+
+// run until all spheres have collided
+void NBodySimulation::runSimulation()
+{
+  // check collisions
+  while(! bodies_.empty() && ! massless_bodies_.empty()) { //or stable orbits
+    advance(TIMEINTERVAL);
+    // find overlaps
+    // remove overlaps
+  }
+}
+
+//n^2 traversal creating complete list of all possible collisions
+void NBodySimulation::findAllOverlaps()
+{
+  if(bodies_.size() <= 0) //no spheres to check collisions with
+    return;
+
+  std::list<Collision> collisions; 
+
+  ManagedBodyIterator i = bodies_.begin();
+  do {
+    ManagedBodyIterator j = i; //not necessary to start at beginning
+
+    //Spheres cannot collide with themselves
+    for(j++; j != bodies_.end(); ++j) {
+      if(COLLISION::isOverlapping(i->body, j->body)) {
+        //record collision
+        determineResult(i->body, j->body);
+        //remove object
+      } 
+    }
+    //*TODO* check boundary collision
+    i++;
+  } while(i != bodies_.end());
+}
+
+//Returns the sphere that is destroyed
+const NBodySimulation::ManagedBody* NBodySimulation::determineResult(const ManagedBody &left, const ManagedBody &right) 
+{
+  if(left.color == Color::kBlack && right.color == Color::kBlack)
+    return NULL; // no sphere is destroyed
+  if(left.color == Color::kBlack)
+    return &right;
+  if(right.color == Color::kBlack)
+    return &left;
+
+  // return the sphere with a smaller radius
+  return left.body.getRadius() <= right.body.getRadius() ? &left : &right;
+}
+
+/*
 
 //ManagedBodyIteratorates through list of all collisions and records only the ones that result
 //in eliminations.
@@ -171,28 +233,6 @@ double NBodySimulation::smallestTime(const std::vector<double>& times)
   }
 
   return smallestTime;
-}
-
-//n^2 traversal creating complete list of all possible collisions
-void NBodySimulation::calculateAllCollisions()
-{
-  if(bodies_.size() <= 0) //no spheres to check collisions with
-    return;
-  typedef std::list<NBodySimulation::IndexedSphere*>::iterator ManagedBodyIterator;
-
-  ManagedBodyIterator i = bodies_.begin();
-  do {
-    //add the collision with the boundary
-    calculateCollision(*i, NULL);
-
-    ManagedBodyIterator j = i; //not necessary to start at beginning
-
-    //Spheres cannot collide with themselves
-    for(j++; j != bodies_.end(); ++j) {
-      calculateCollision(*i, *j); //add collision between the two spheres
-    }
-    i++;
-  } while(i != bodies_.end());
 }
 
 //Calculates collision times and adds soonest value to collisions_
