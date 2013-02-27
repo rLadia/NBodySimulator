@@ -5,7 +5,9 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include "vector3.h"
+#include "nvector.h"
+
+typedef NVector<int, 3> Vector3;
 
 class Sphere {
   protected:
