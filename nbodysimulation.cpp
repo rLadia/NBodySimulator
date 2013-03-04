@@ -17,7 +17,7 @@ void NBodySimulation::addBody(Color color, const Vector3& center,
   ManagedBody indexed_body = { index_, body, color };
   
   if(color == Color::kBlack)
-    massless_bodies_.push_back(indexed_body);
+    freemoving_bodies_.push_back(indexed_body);
   else
      bodies_.push_back(indexed_body);
 
@@ -43,18 +43,19 @@ std::vector<NBodySimulation::Record> NBodySimulation::getSimulationResults()
 // run until all spheres have collided
 void NBodySimulation::runSimulation()
 {
-  while(! bodies_.empty() || ! massless_bodies_.empty()) { 
+  while(! bodies_.empty() || ! freemoving_bodies_.empty()) { 
     findAllOverlaps();
     updateAllForces();
     advance(TIMEINTERVAL);
   }
 }
 
+// calculates 
 void NBodySimulation::updateAllForces()
 {
   resetForces(); //start from 0
   calculateForcesFromBodies();
-  calculateForcesFromMasslessBodies();
+  calculateForcesFromFreeMovingBodies();
   calculateForcesFromBlackHoles();
 }
 
@@ -64,7 +65,7 @@ void NBodySimulation::advance(double time) {
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
     i->body.advance(time);
   }
-  for(ManagedBodyIterator i = massless_bodies_.begin(); i != massless_bodies_.end(); ++i) {
+  for(ManagedBodyIterator i = freemoving_bodies_.begin(); i != freemoving_bodies_.end(); ++i) {
     i->body.advance(time);
   }
 
@@ -79,10 +80,10 @@ void NBodySimulation::resetForces()
     i->body.setForce(Vector3(0,0,0));
 }
 
-void NBodySimulation::calculateForcesFromMasslessBodies()
+void NBodySimulation::calculateForcesFromFreeMovingBodies()
 {
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
-    for(ManagedBodyIterator j = massless_bodies_.begin(); j != massless_bodies_.end(); ++j) {
+    for(ManagedBodyIterator j = freemoving_bodies_.begin(); j != freemoving_bodies_.end(); ++j) {
       updateForce(i->body, j->body);
       j->body.setForce(Vector3(0,0,0)); //massless bodies not affected by mass
     }
@@ -126,10 +127,8 @@ void NBodySimulation::updateForce(SimulatedBody &b1, SimulatedBody &b2)
 //n^2 traversal creating complete list of all possible collisions
 void NBodySimulation::findAllOverlaps()
 {
-  if(bodies_.size() <= 0 && massless_bodies_.size() <= 0) //no spheres to check collisions with
+  if(bodies_.size() <= 0 && freemoving_bodies_.size() <= 0) //no spheres to check collisions with
     return;
-
-  std::list<Collision> collisions; 
 
   //check overlap of bodies with black holes
   ManagedBodyIterator i = bodies_.begin();
@@ -169,7 +168,7 @@ void NBodySimulation::findAllOverlaps()
     };
 
     if(!eraseI) { //check against massless bodies
-      for(ManagedBodyIterator k = massless_bodies_.begin(); k != massless_bodies_.end(); ++k) {
+      for(ManagedBodyIterator k = freemoving_bodies_.begin(); k != freemoving_bodies_.end(); ++k) {
         if(COLLISION::isOverlapping(i->body, k->body)) {
           recordEvent(*i, time_, CollisionType::kCollision);
           i = bodies_.erase(i);
@@ -194,11 +193,11 @@ void NBodySimulation::findAllOverlaps()
       ++i;
   };
 
-  i = massless_bodies_.begin();
-  while(i != massless_bodies_.end()) {
+  i = freemoving_bodies_.begin();
+  while(i != freemoving_bodies_.end()) {
     if(isOverlappingBoundary(i->body)) {
       recordEvent(*i, time_, CollisionType::kBoundary);
-      i = massless_bodies_.erase(i);
+      i = freemoving_bodies_.erase(i);
     } else
       ++i;
   };
