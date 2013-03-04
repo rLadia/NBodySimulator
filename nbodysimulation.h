@@ -20,7 +20,7 @@ public:
   enum CollisionType {
     kCollision, // collided with another sphere
     kBlackHole, //collided with the black hole
-    kBoundary, //collided with the boundary
+    kBoundary //collided with the boundary
   };
 
   // Contains user accessible information about a collision

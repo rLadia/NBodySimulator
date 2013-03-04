@@ -12,7 +12,7 @@ namespace Color {
       kRed, 
       kGreen,
       kBlue,
-      kYellow,
+      kYellow
    };
 
    // string array corresponding to enum positions of Color
@@ -25,6 +25,6 @@ namespace Color {
    // matches the given string to the enum values and returns the appropriate value
    // if no match was found, it returns kBlack
    Color toColor(const std::string &);
-};
+}
 
 #endif
