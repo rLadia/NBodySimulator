@@ -1,24 +1,20 @@
 #ifndef LADIA_CSS342_NBODYSIMULATION_H
 #define LADIA_CSS342_NBODYSIMULATION_H
 
-#include <vector>
-#include <list>
-#include <cassert>
-#include <limits>
 #include <algorithm>
+#include <cassert>
+#include <list>
+#include <vector>
 
 #include "color.h"
 #include "collision.h"
 #include "gravity.h"
 #include "simulatedbody.h"
 
-//accepts a groups of spheres and calculates when they collide
-//will destroy the smaller sphere when it collides
-
 static const double TIMEINTERVAL = .01;
 static const int GRAVITY = 10;
 
-
+// Simulates the motion of 3d bodies through space
 class NBodySimulation {
 public:
   enum CollisionType {
@@ -35,19 +31,23 @@ public:
     CollisionType collision; // the type of collision that occured
   };
 
-  // adds a sphere to the internal list of bodies to be simulated
+  // adds a body to be simulated
   void addBody(Color::Color, const Vector3 &, int, const Vector3 &);
   
-  // adds a black hole to the bodies to be simulated
+  // adds a black hole to be simulated
   void addBlackHole(const Vector3 &, int);
 
-  //return: vector containing the information about all of the collisions
-  //  that have occurred so far
+  // returns a vector containing the information 
+  // about all of the events that have occured
   std::vector<Record> getSimulationResults();
 
   // runs the simulation until no bodies exist
   // *TODO* add check for stable orbits
   void runSimulation(); 
+
+  // removes all simulated bodies and
+  // resets simulation to initial state
+  void reset();
 
   NBodySimulation(unsigned int); //boundary size
 
@@ -69,17 +69,15 @@ private:
 
   //contains the list of bodies to be simulated
   std::list<ManagedBody> bodies_;
-  std::list<SimulatedBody> black_holes_;
   std::list<ManagedBody> freemoving_bodies_;
+  std::list<SimulatedBody> black_holes_;
 
   typedef std::list<NBodySimulation::ManagedBody>::iterator ManagedBodyIterator;
   typedef std::list<SimulatedBody>::iterator SimulatedBodyIterator;
 
   typedef Color::Color Color;
-
-  void findAllOverlaps();
   
-  // Updates the instantaneous force acting upon all of the simulated bodies
+  // Updates the instantaneous force exerted on all of the simulated bodies
   void updateAllForces();
 
   // sets the net force of the simulated bodies to 0
@@ -94,18 +92,34 @@ private:
   // Adds the force exerted on each body to each body's net force 
   void updateForce(SimulatedBody &, SimulatedBody &);
   
+  // compares the simulated bodies with the black holes, each other and the 
+  // boundary. If any overlaps are found, the event is recorded as a collision
+  // and the body is removed from the simulation
+  void handleOverlaps();
+
+  // if any of the bodies collided with each other
+  // the smaller body is removed from the list and the event is recorded
+  void handleBodyOverlap();
+
+  // records the event and erase the body from the list
+  void recordAndErase(std::list<ManagedBody> &, ManagedBodyIterator &, CollisionType);
+
+  // if any of the bodies collided with the boundary
+  // the event is recorded and the body is removed from the simulation
+  void handleBoundaryOverlap(std::list<ManagedBody> &);
+
+  // if any of the bodies collided with a black hole
+  // the event is recorded and the body is removed from the list
+  void handleBlackHoleOverlap(std::list<ManagedBody> &, const std::list<SimulatedBody> &);
+
   // returns: true if the sphere is overlapping the boundary
   bool isOverlappingBoundary(const Sphere &);
   
-  void removeSmallerBody(ManagedBodyIterator, ManagedBodyIterator);
-
   // advances the simulation by the time period given
   void advance(double); 
 
   // Adds the collision event to the list of recorded events
   void recordEvent(const ManagedBody&, double, CollisionType);
-
-  
 
   // do not make a copy of this class
   NBodySimulation(const NBodySimulation &);

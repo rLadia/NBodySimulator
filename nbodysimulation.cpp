@@ -6,7 +6,7 @@ NBodySimulation::NBodySimulation(unsigned int boundary)
   : index_(1), boundary_(boundary), time_(0)
 {}
 
-//appends the internal list of spheres with the given attributes of a sphere
+// adds a body to be simulated
 void NBodySimulation::addBody(Color color, const Vector3& center,
   int radius, const Vector3& velocity)
 {
@@ -24,7 +24,7 @@ void NBodySimulation::addBody(Color color, const Vector3& center,
   index_++;
 }
 
-//assigns the properties to the black hole and adds it to the list of black holes
+// adds a body to be simulated
 void NBodySimulation::addBlackHole(const Vector3& center, int mass)
 {
   SimulatedBody black_hole;
@@ -44,19 +44,20 @@ std::vector<NBodySimulation::Record> NBodySimulation::getSimulationResults()
 void NBodySimulation::runSimulation()
 {
   while(! bodies_.empty() || ! freemoving_bodies_.empty()) { 
-    findAllOverlaps();
+    handleOverlaps();
     updateAllForces();
     advance(TIMEINTERVAL);
   }
 }
-
-// calculates 
-void NBodySimulation::updateAllForces()
+// removes all simulated bodies and
+// resets simulation to initial state
+void NBodySimulation::reset()
 {
-  resetForces(); //start from 0
-  calculateForcesFromBodies();
-  calculateForcesFromFreeMovingBodies();
-  calculateForcesFromBlackHoles();
+  bodies_.clear();
+  freemoving_bodies_.clear();
+  black_holes_.clear();
+  time_ = 0;
+  index_ = 1;
 }
 
 // calculates the forces for the current frame and advances the spheres by the 
@@ -72,7 +73,16 @@ void NBodySimulation::advance(double time) {
   time_ += time;
 }
 
-//set the forces of each body to 0
+// Updates the instantaneous force exerted on all of the simulated bodies
+void NBodySimulation::updateAllForces()
+{
+  resetForces(); //start from 0
+  calculateForcesFromBodies();
+  calculateForcesFromFreeMovingBodies();
+  calculateForcesFromBlackHoles();
+}
+
+// set the forces of each simulated body to 0
 void NBodySimulation::resetForces() 
 {
   typedef std::list<NBodySimulation::ManagedBody>::iterator ManagedBodyIterator;
@@ -80,17 +90,20 @@ void NBodySimulation::resetForces()
     i->body.setForce(Vector3(0,0,0));
 }
 
+// Calculates the instantaneous forces exerted on the simulated bodies
+// by the free moving bodies
 void NBodySimulation::calculateForcesFromFreeMovingBodies()
 {
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
     for(ManagedBodyIterator j = freemoving_bodies_.begin(); j != freemoving_bodies_.end(); ++j) {
       updateForce(i->body, j->body);
-      j->body.setForce(Vector3(0,0,0)); //massless bodies not affected by mass
+      j->body.setForce(Vector3(0,0,0)); //massless bodies not affected by force
     }
   }
 }
 
-//n^2 iteration calculating and applying the forc
+// Calculates the instantaneous forces exerted on the simulated bodies
+// by each other simulated body
 void NBodySimulation::calculateForcesFromBodies() 
 {
   ManagedBodyIterator i = bodies_.begin();
@@ -105,6 +118,8 @@ void NBodySimulation::calculateForcesFromBodies()
   };
 }
 
+// Calculates the instantaneous forces exerted on the simulated bodies
+// by the black holes
 void NBodySimulation::calculateForcesFromBlackHoles()
 {
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
@@ -113,6 +128,7 @@ void NBodySimulation::calculateForcesFromBlackHoles()
   }
 }
 
+// Adds the force exerted on each body to each body's net force 
 void NBodySimulation::updateForce(SimulatedBody &b1, SimulatedBody &b2)
 {
   Gravity::PointMass m1 = { b1.getMass(), b1.getCenter() };
@@ -125,84 +141,111 @@ void NBodySimulation::updateForce(SimulatedBody &b1, SimulatedBody &b2)
 
 //*TODO* refactor this huge, monolithic function
 //n^2 traversal creating complete list of all possible collisions
-void NBodySimulation::findAllOverlaps()
+void NBodySimulation::handleOverlaps()
 {
   if(bodies_.size() <= 0 && freemoving_bodies_.size() <= 0) //no spheres to check collisions with
     return;
 
-  //check overlap of bodies with black holes
+  // check if bodies overlap with black holes
+  handleBlackHoleOverlap(bodies_, black_holes_);
+
+  // check if bodies overlap with each other
+  handleBodyOverlap();
+
+  // check if bodies overlap with the boundary
+  handleBoundaryOverlap(bodies_);
+  handleBoundaryOverlap(freemoving_bodies_);
+}
+
+void NBodySimulation::handleBodyOverlap()
+{
   ManagedBodyIterator i = bodies_.begin();
+  
+  // iterate through list of bodies
   while(i != bodies_.end()) {
-    for(SimulatedBodyIterator j = black_holes_.begin(); j != black_holes_.end(); ++j) {
+    ManagedBodyIterator j = i; //not necessary to start at beginning
+    ++j; //bodies do not collide with themselves
+
+    bool bodyWasErased = false; // flag set when body is erased
+
+    // iterate through list of free moving bodies
+    ManagedBodyIterator k;
+    for(k = freemoving_bodies_.begin(); k != freemoving_bodies_.end(); ++k) {
+        if(COLLISION::isOverlapping(i->body, k->body)) { // body and sphere are overlapping
+          recordAndErase(bodies_, i, CollisionType::kCollision);
+          bodyWasErased = true;
+          break; // do not compare i with rest of the free moving bodies
+        }
+      }
+
+    if(! bodyWasErased) { // body still exists, compare with rest of list
+      while(j != bodies_.end()) { // iterate through rest of list
+        if(COLLISION::isOverlapping(i->body, j->body)) { //overlap found
+          if(i->body.getRadius() > j->body.getRadius()) { // j is smaller
+            recordAndErase(bodies_, j, CollisionType::kCollision);
+          } else {
+            recordAndErase(bodies_, i, CollisionType::kCollision);
+            bodyWasErased = true;
+            break; // do not compare i with rest of the bodies
+          }
+        }
+        else
+          ++j; // prevent double increment
+      };
+    }
+    if(!bodyWasErased) // do not double increment
+      i++;
+  };
+}
+
+void NBodySimulation::recordAndErase(
+  std::list<ManagedBody> &list, 
+  ManagedBodyIterator &iter, 
+  CollisionType collsionType)
+{
+  recordEvent(*iter, time_, collsionType);
+  iter = list.erase(iter);
+}
+
+// if any of the bodies collided with a black hole
+// the event is recorded and the body is removed from the list
+void NBodySimulation::handleBlackHoleOverlap(
+  std::list<ManagedBody> &bodies, const std::list<SimulatedBody> & blackholes)
+{
+  std::list<SimulatedBody>::const_iterator j;
+
+  // iterate through list of bodies
+  ManagedBodyIterator i = bodies.begin();
+  while(i != bodies.end()) { 
+    // iterate through list of black holes
+    for(j = blackholes.begin(); j != blackholes.end(); ++j) { 
       if(COLLISION::isOverlapping(i->body, j->getCenter())) {
         recordEvent(*i, time_, CollisionType::kBlackHole);
-        i = bodies_.erase(i); //erase body from existence
+        i = bodies.erase(i); //erase body from existence
       } else {
         ++i;
       }
     }
   };
+}
 
-  i = bodies_.begin();
-  
-  //check overlap between bodies with other bodies
-  while(i != bodies_.end()) {
-    ManagedBodyIterator j = i; //not necessary to start at beginning
-    ++j; //bodies do not collide with themselves
+// if any of the bodies collided with the boundary
+// the event is recorded and the body is removed from the simulation
+void NBodySimulation::handleBoundaryOverlap(std::list<ManagedBody> &bodies)
+{
+  ManagedBodyIterator i = bodies.begin();
 
-    bool eraseI = false;
-    while(j != bodies_.end()) {
-      if(COLLISION::isOverlapping(i->body, j->body)) { //overlap found
-        if(i->body.getRadius() > j->body.getRadius()) { // j is smaller
-          recordEvent(*j, time_, CollisionType::kCollision);
-          j = bodies_.erase(j);
-        } else {
-          recordEvent(*i, time_, CollisionType::kCollision);
-          i = bodies_.erase(i);
-          eraseI = true;
-          break; // do not compare i with rest of values
-        }
-      }
-      else
-        ++j;
-    };
-
-    if(!eraseI) { //check against massless bodies
-      for(ManagedBodyIterator k = freemoving_bodies_.begin(); k != freemoving_bodies_.end(); ++k) {
-        if(COLLISION::isOverlapping(i->body, k->body)) {
-          recordEvent(*i, time_, CollisionType::kCollision);
-          i = bodies_.erase(i);
-          eraseI = true;
-          break; // do not compare i with rest of the massless bodies
-        }
-      }
-    }
-
-    if(!eraseI) // do not double increment
-      i++;
-  };
-
-  // check collision with boundary
-  i = bodies_.begin();
-  while(i != bodies_.end()) {
-    if(isOverlappingBoundary(i->body)) {
+  // iterate through the list of bodies
+  while(i != bodies.end()) {
+    if(isOverlappingBoundary(i->body)) { // if overlapping
       recordEvent(*i, time_, CollisionType::kBoundary);
-      isOverlappingBoundary(i->body);
-      i = bodies_.erase(i);
-    } else
-      ++i;
-  };
-
-  i = freemoving_bodies_.begin();
-  while(i != freemoving_bodies_.end()) {
-    if(isOverlappingBoundary(i->body)) {
-      recordEvent(*i, time_, CollisionType::kBoundary);
-      i = freemoving_bodies_.erase(i);
+      i = bodies.erase(i); // remove from simulation
     } else
       ++i;
   };
 }
 
+// returns: true if the sphere is overlapping the boundary
 bool NBodySimulation::isOverlappingBoundary(const Sphere &sphere)
 {
   Vector3 center = sphere.getCenter();
@@ -215,6 +258,7 @@ bool NBodySimulation::isOverlappingBoundary(const Sphere &sphere)
   return false;
 }
 
+ // Adds the collision event to the list of recorded events
 void NBodySimulation::recordEvent(
   const ManagedBody &body, double time, NBodySimulation::CollisionType type)
 {
