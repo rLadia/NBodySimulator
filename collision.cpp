@@ -26,16 +26,16 @@ std::vector<double> COLLISION::calculateCollisionTimes(const MovingSphere& left,
   int radius = right.getRadius() + left.getRadius();
 
   using std::vector;
-  vector<int> x_squared = POLYNOMIAL::square(vel.x(), pos.x());
-  vector<int> y_squared = POLYNOMIAL::square(vel.y(), pos.y());
-  vector<int> z_squared = POLYNOMIAL::square(vel.z(), pos.z());
+  vector<double> x_squared = POLYNOMIAL::square(vel.x(), pos.x());
+  vector<double> y_squared = POLYNOMIAL::square(vel.y(), pos.y());
+  vector<double> z_squared = POLYNOMIAL::square(vel.z(), pos.z());
 
-  vector<int> squared(3);
+  vector<double> squared(3);
    
   for(int i = 0; i < 3; ++i) {
     squared[i] = x_squared[i] + y_squared[i] + z_squared[i];
   }  
   squared[2] -= radius * radius; //subtract r^2 from both sides
 
-  return POLYNOMIAL::quadratic(squared);
+  return POLYNOMIAL::SecondDegreeSolutions<double>(squared);
 }
