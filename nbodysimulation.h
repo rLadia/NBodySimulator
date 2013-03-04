@@ -15,8 +15,9 @@
 //accepts a groups of spheres and calculates when they collide
 //will destroy the smaller sphere when it collides
 
-static const double TIMEINTERVAL = .001;
+static const double TIMEINTERVAL = .01;
 static const int GRAVITY = 10;
+
 
 class NBodySimulation {
 public:
@@ -29,7 +30,8 @@ public:
   //Contains user accessible information about a collision
   struct Record {
     int index; //the index of the sphere that collided
-    int time; //the time of the collision
+    Color::Color color;
+    double time; //the time of the collision
     CollisionType collision; // the type of collision that occured
   };
 
@@ -92,11 +94,14 @@ private:
   typedef std::list<MovingSphere>::iterator MasslessBodyIterator;
 
   typedef Color::Color Color;
-
-  void calculateForcesFromSpheres();
+  
+  void updateAllForces();
+  void calculateForcesFromMasslessBodies();
+  void calculateForcesFromBodies();
   void calculateForcesFromBlackHoles();
 
-  //updates the acceleration of each body 
+  
+  //updates the force of each body 
   void updateForce(SimulatedBody &, SimulatedBody &);
 
   // sets all of the forces in the bodies to 0
@@ -115,16 +120,7 @@ private:
   void advance(double); // advances the simulation by the time period given
 
   //body, time, type
-  void recordEvent(const ManagedBody&, int, CollisionType);
-
-  //Calculates the collision times between the two spheres and adds the
-  //soonest one. If the second argument is null, it calculates the time it
-  //takes for the sphere to collide with the boundary and adds that collision.
-  //
-  //pre: sphere1 is non-null, sphere2 is null if the sphere is colliding with 
-  //  the boundary
-  //post: collisions_ appended with collisions from two input spheres
-  void calculateCollision(const ManagedBody*, const ManagedBody*);
+  void recordEvent(const ManagedBody&, double, CollisionType);
 
   //Compares each sphere with every other sphere and the boundary. All 
   //collisions detected by these comparisions will be added to collisions_.
@@ -132,28 +128,6 @@ private:
   //post: collisions_ appended with all possible collisions made between 
   //  spheres and the boundary
   void findAllOverlaps();
-
-  //Iterates through the list of collisions and records the eliminations that 
-  //result. Once a sphere has been eliminated, this function removes all future
-  //collisions that involved that sphere.
-  //
-  //post: records_ contains all of the eliminations made by the simulation. 
-  //  collision_ is empty
-  void recordEliminations();
-  
-  //Returns a vector containing the times the sphere will collide with each
-  //of the six planes of the boundary cube. If one dimension of the sphere 
-  //is stationary, there will be no collisions for that dimension. Boundary
-  //collisions at t=0 are not added.
-  std::vector<double> boundaryCollisionTimes(const MovingSphere &);
-
-  //Adds the elimination record to the list of records. This function will only
-  //add a record for the smaller sphere involved in the collision with the
-  //boundary being larger than all spheres.
-  //
-  //return: the sphere added to the list of elimination records
-  //post: records_ appended with the time, index and type of collision
-  const ManagedBody* addEliminationRecord(const Collision &);
 
   //do not make a copy of this class
   NBodySimulation(const NBodySimulation &);
