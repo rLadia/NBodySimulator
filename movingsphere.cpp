@@ -1,10 +1,11 @@
 #include "movingsphere.h"
 
-//default ctor
+// default ctor
 MovingSphere::MovingSphere()
   : velocity_(0,0,0)
 {}
 
+// Creates a sphere with the properties of position, radius and velocity
 MovingSphere::MovingSphere(const Vector3 &position, int radius, const Vector3 &velocity) 
 {
   center_ = position;
@@ -12,19 +13,17 @@ MovingSphere::MovingSphere(const Vector3 &position, int radius, const Vector3 &v
   radius_ = radius;
 }
 
+// changes the position based on the current velocity and given time interval
 void MovingSphere::advance(const double time) {
-  center_.transform(velocity_);
+  center_ += velocity_ * time;
 }
 
+// adds the given vector to the internal vector
 void MovingSphere::transform(const Vector3 &vector) {
-  velocity_.transform(vector);
+  center_ += vector;
 }
 
 //Setters
-void MovingSphere::setVelocity(int vx, int vy, int vz) {
-  velocity_ = Vector3(vx, vy, vz);
-}
-
 void MovingSphere::setVelocity(const Vector3 &vel) {
   velocity_ = vel;
 }
