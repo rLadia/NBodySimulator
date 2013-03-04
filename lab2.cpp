@@ -5,14 +5,15 @@
 //gets rid of assertions
 //#define NDEBUG
 
+#include <cassert>
+#include <iomanip>
 #include <iostream>
 #include <fstream>
-#include <iomanip>
 #include <sstream>
-#include <cassert>
-#include "NBodySimulation.h"
-#include "movingsphere.h"
+
 #include "collision.h"
+#include "movingsphere.h"
+#include "nbodysimulation.h"
 #include "polynomial.h"
 
 using std::string;
@@ -66,20 +67,30 @@ int main()
 // destroyed. Information is printed in a 3 column format
 void printCollisionResults(const std::vector<Record> &results) 
 {
-  static const unsigned int INDEXWIDTH = 5;
-  static const unsigned int COLORWIDTH = 8;
-  static const unsigned int TIMEWIDTH = 8;
+  static const unsigned int kIndexHeaderWidth = 5;
+  static const unsigned int kHeaderSpacing = 3;
+  static const unsigned int kColorHeaderWidth = 8;
+  static const unsigned int kTimeHeaderWidth = 8;
 
   printTableHeader();
   
   string collision_type[] = { "Collision", "Black Hole", "Boundary" };
 
   using std::cout;
+  using std::left;
+  using std::setw;
+
+  string headerSpace(3, ' ');
+
   std::vector<Record>::const_iterator i;
   for(i = results.begin(); i != results.end(); ++i) {
-    cout << center(numberToString(i->index), INDEXWIDTH).c_str();
-    cout << center(Color::toString(i->color), COLORWIDTH).c_str();
-    cout << center(numberToString(i->time), TIMEWIDTH).c_str();
+    cout << center(numberToString(i->index), kIndexHeaderWidth);
+    cout << headerSpace;
+    cout << left << setw(kColorHeaderWidth) << Color::toString(i->color);
+
+    int time = static_cast<int>(i->time);
+    cout << center(numberToString(time), kTimeHeaderWidth);
+    cout << headerSpace;
     cout << collision_type[i->collision];
     cout << "\n";
   }
@@ -91,8 +102,8 @@ void printTableHeader()
   using std::cout;
   cout << "Sphere Ellimination Records" << "\n";
   cout << "==========================" << "\n";
-  cout << "Index Color Time (s) Event type" << "\n";
-  cout << "----- ----- -------- ----------" << "\n";
+  cout << "Index   Color   Time (s)   Event type" << "\n";
+  cout << "-----   -----   --------   ----------" << "\n";
 }
 
 //Returns a new string of length n, containing the given string centered

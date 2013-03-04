@@ -20,4 +20,3 @@ NVector<double, 3> Gravity::force(PointMass m1, PointMass m2, const double g_con
   // GMm/r^3 * R
   return direction * (g_constant * m1.mass * m2.mass / r3);
 }
-
