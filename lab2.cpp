@@ -1,4 +1,4 @@
-//Rodelle Ladia Jr.
+//Rodelle Ladia Jr.BOUNDARYSIZE
 //CSSE 342, Winter 2013 
 //Lab 2
 
@@ -15,25 +15,22 @@
 #include "collision.h"
 #include "polynomial.h"
 
-using namespace std;
-using namespace COLLISION;
-using namespace POLYNOMIAL;
+using std::string;
 
-//file location
-static const char* FILENAME = "sphere.txt";
-static const int BOUNDARYSIZE = 1000;
+static const char* kFileName = "sphere.txt"; // file location
+static const int kBoundarySize = 1000; // default boundary size
 
-//Fills the fields of sphere with information from the file
-//returns false if there was an error opening the file
-bool createBodiesFromFile(NBodySimulation &, ifstream &);
-bool createBlackHoleFromFile(NBodySimulation &, ifstream &);
+// uses the information from the file to add bodies to the simulation
+// returns false if there was an error opening the file
+bool createBodiesFromFile(NBodySimulation &, std::ifstream &);
+bool createBlackHoleFromFile(NBodySimulation &, std::ifstream &);
 
 typedef NBodySimulation::Record Record;
 
-//Prints out each sphere's index, its time of collision, and whether it was 
-//destroyed by colliding with a sphere or by hitting the boundary
-//Information is printed in a 3 column format
-void printCollisionResults(const vector<Record> &);
+// Prints out each sphere's index, its time of collision, and how it was
+// destroyed. Information is printed in a 3 column format
+void printCollisionResults(const std::vector<Record> &);
+void printTableHeader();
 
 //Returns a new string of length n, containing the given string centered and
 //surrounded on either side with an equal number of spaces
@@ -41,49 +38,61 @@ void printCollisionResults(const vector<Record> &);
 string center(const string &, string::size_type);
 
 //uses string stream to convert a number to a string
-string numberToString(int);
+template<typename T>
+string numberToString(T);
 
 int main()
 {
   MovingSphere sphere;
-  ifstream file(FILENAME);
+  std::ifstream file(kFileName);
   
-  NBodySimulation simulation(BOUNDARYSIZE);
-  if(!createBodiesFromFile(simulation, file)) {
-    cerr << "File was not successfully opened.\n";
+  NBodySimulation simulation(kBoundarySize);
+
+  // add the bodies to the simulation
+  if(!createBodiesFromFile(simulation, file)) { 
+    std::cerr << "File was not successfully opened.\n";
     return EXIT_FAILURE;
   }
   file.close();
 
   simulation.runSimulation();
-  vector<Record> results = simulation.getSimulationResults();
+  std::vector<Record> results = simulation.getSimulationResults();
   printCollisionResults(results);
 
   return EXIT_SUCCESS;
 }
 
-//Prints out each sphere's index, its time of collision, and whether it was 
-//destroyed by colliding with a sphere or by hitting the boundary
-//Information is printed in a 3 column format
-void printCollisionResults(const vector<Record> &results) 
+// Prints out each sphere's index, its time of collision, and how it was
+// destroyed. Information is printed in a 3 column format
+void printCollisionResults(const std::vector<Record> &results) 
 {
   static const unsigned int INDEXWIDTH = 5;
-  static const unsigned int TIMEWIDTH = 16;
+  static const unsigned int COLORWIDTH = 8;
+  static const unsigned int TIMEWIDTH = 8;
 
-  cout << "Sphere Ellimination Records" << endl;
-  cout << "==========================" << endl << endl;
-  cout << "Index    Time (s)    Event type" << endl;
-  cout << "-----    --------    ----------" << endl;
+  printTableHeader();
   
-  string collision_name[] = { "Collision", "Black Hole", "Boundary" };
+  string collision_type[] = { "Collision", "Black Hole", "Boundary" };
 
-  vector<Record>::const_iterator i;
+  using std::cout;
+  std::vector<Record>::const_iterator i;
   for(i = results.begin(); i != results.end(); ++i) {
     cout << center(numberToString(i->index), INDEXWIDTH).c_str();
+    cout << center(Color::toString(i->color), COLORWIDTH).c_str();
     cout << center(numberToString(i->time), TIMEWIDTH).c_str();
-    cout << collision_name[i->collision];
-    cout << endl;
+    cout << collision_type[i->collision];
+    cout << "\n";
   }
+}
+
+// prints the table header
+void printTableHeader()
+{
+  using std::cout;
+  cout << "Sphere Ellimination Records" << "\n";
+  cout << "==========================" << "\n";
+  cout << "Index Color Time (s) Event type" << "\n";
+  cout << "----- ----- -------- ----------" << "\n";
 }
 
 //Returns a new string of length n, containing the given string centered
@@ -102,17 +111,8 @@ string center(const string &s, string::size_type length)
   return result;
 }
 
-//uses string stream to convert a number to a string
-string numberToString(int number) 
-{
-  ostringstream ss;
-  ss << number;
-  return ss.str();
-}
-
-//Uses the information from the file to create spheres in NBodySimulation
-//*TODO* handle errors from incorrect file format
-bool createBodiesFromFile(NBodySimulation &simulation, ifstream &file)
+// uses the information from the file to add bodies to the simulation
+bool createBodiesFromFile(NBodySimulation &simulation, std::ifstream &file)
 {
   if(!file.is_open())
    return false; //file was not able to be read
@@ -136,7 +136,8 @@ bool createBodiesFromFile(NBodySimulation &simulation, ifstream &file)
   return true;
 }
 
-bool createBlackHoleFromFile(NBodySimulation &simulation, ifstream &file)
+// adds the black hole to the simulation
+bool createBlackHoleFromFile(NBodySimulation &simulation, std::ifstream &file)
 {
   int x, y, z, m;
   file >> x >> y >> z >> m;
@@ -145,4 +146,13 @@ bool createBlackHoleFromFile(NBodySimulation &simulation, ifstream &file)
 
   simulation.addBlackHole(Vector3(x, y, z), m);
   return true;
+}
+
+//uses string stream to convert a number to a string
+template<typename T>
+string numberToString(T number) 
+{
+  std::ostringstream ss;
+  ss << number;
+  return ss.str();
 }
