@@ -172,7 +172,7 @@ void NBodySimulation::handleBodyOverlap()
     ManagedBodyIterator k;
     for(k = freemoving_bodies_.begin(); k != freemoving_bodies_.end(); ++k) {
         if(COLLISION::isOverlapping(i->body, k->body)) { // body and sphere are overlapping
-          recordAndErase(bodies_, i, CollisionType::kCollision);
+          recordAndErase(bodies_, i, kCollision);
           bodyWasErased = true;
           break; // do not compare i with rest of the free moving bodies
         }
@@ -182,9 +182,9 @@ void NBodySimulation::handleBodyOverlap()
       while(j != bodies_.end()) { // iterate through rest of list
         if(COLLISION::isOverlapping(i->body, j->body)) { //overlap found
           if(i->body.getRadius() > j->body.getRadius()) { // j is smaller
-            recordAndErase(bodies_, j, CollisionType::kCollision);
+            recordAndErase(bodies_, j, kCollision);
           } else {
-            recordAndErase(bodies_, i, CollisionType::kCollision);
+            recordAndErase(bodies_, i, kCollision);
             bodyWasErased = true;
             break; // do not compare i with rest of the bodies
           }
@@ -201,7 +201,7 @@ void NBodySimulation::handleBodyOverlap()
 void NBodySimulation::recordAndErase(
   std::list<ManagedBody> &list, 
   ManagedBodyIterator &iter, 
-  CollisionType collsionType)
+  NBodySimulation::CollisionType collsionType)
 {
   recordEvent(*iter, time_, collsionType);
   iter = list.erase(iter);
@@ -220,7 +220,7 @@ void NBodySimulation::handleBlackHoleOverlap(
     // iterate through list of black holes
     for(j = blackholes.begin(); j != blackholes.end(); ++j) { 
       if(COLLISION::isOverlapping(i->body, j->getCenter())) {
-        recordEvent(*i, time_, CollisionType::kBlackHole);
+        recordEvent(*i, time_, kBlackHole);
         i = bodies.erase(i); //erase body from existence
       } else {
         ++i;
@@ -238,7 +238,7 @@ void NBodySimulation::handleBoundaryOverlap(std::list<ManagedBody> &bodies)
   // iterate through the list of bodies
   while(i != bodies.end()) {
     if(isOverlappingBoundary(i->body)) { // if overlapping
-      recordEvent(*i, time_, CollisionType::kBoundary);
+      recordEvent(*i, time_, kBoundary);
       i = bodies.erase(i); // remove from simulation
     } else
       ++i;
