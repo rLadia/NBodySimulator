@@ -3,7 +3,7 @@
 
 #include "sphere.h"
 
-//Adds velocity property to Sphere
+// Adds velocity property to Sphere
 class MovingSphere : public Sphere {
 
   protected:
@@ -11,19 +11,20 @@ class MovingSphere : public Sphere {
 
   public:
   MovingSphere();
+
+  // Creates a sphere with the properties of position, radius and velocity
   MovingSphere(const Vector3 &, int, const Vector3 &);
 
-  // adds the given vector to the internal vector
+  // changes the position of the sphere by the given vector
   void transform(const Vector3 &);
 
-  // modifies the position based on the current velocity
+  // changes the position based on the current velocity and given time interval
   void advance(const double); 
 
-  //setters
-  void setVelocity(int, int, int);
+  // setters
   void setVelocity(const Vector3 &);
 
-  //getters
+  // getters
   Vector3 getVelocity() const;
 };
 
