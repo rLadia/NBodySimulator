@@ -1,10 +1,15 @@
 #include "simulatedbody.h"
 
+// default constructor
 SimulatedBody::SimulatedBody()
 {}
 
-//mass = radius
-SimulatedBody::SimulatedBody(const Vector3 &position, int radius, const Vector3 &velocity, const Vector3 &force, int mass)
+SimulatedBody::SimulatedBody(
+  const Vector3 &position, 
+  int radius, 
+  const Vector3 &velocity, 
+  const Vector3 &force, 
+  int mass)
 {
   center_ = position;
   radius_ = radius;
@@ -13,12 +18,15 @@ SimulatedBody::SimulatedBody(const Vector3 &position, int radius, const Vector3 
   mass_ = mass;
 }
 
-//Modifies position and velocity based on current velocity and acceleration
-//*TODO* assert( ||v|| < c )
+// Modifies the position and velocity 
+// according to current velocity and acceleration
+// *TODO* assert( ||v|| < c )
 void SimulatedBody::advance(const double time) {
   Vector3 acceleration = force_ * (1.0f / mass_);
 
   center_ += velocity_ * time;
+
+  // this may not be necessary
   center_ += acceleration * 0.5 * time * time; // 1/2 * a * t^2
 
   velocity_ += acceleration * time; // v(t) = v(0) + at

@@ -4,30 +4,31 @@
 #include "movingsphere.h"
 
 
-//Holds the properties of a simulated sphere
+// Simulates a body with a position, radius, mass and force
+// the body will move through space according to the laws of newtonian motion
 class SimulatedBody
-  : public MovingSphere 
+  : public MovingSphere // implemented using a sphere approximation
 {
 public:
-  //default ctor
-  SimulatedBody();
-
-  //location, radius, velocity, force, mass
-  SimulatedBody(const Vector3 &, int, const Vector3 &, const Vector3 &, int);
-
   // advances position based on current velocity, acceleration and force
   // using the kinematic forumlas: 
   //  x(t) = x(0) + v(0) * t + 1/2 * a * t^2
   //  v(t) = v(0) + a * t
   void advance(double);
 
-  //setters
+  // setters
   void setMass(int);
   void setForce(const Vector3 &);
 
-  //getters
+  // getters
   int getMass() const;
   Vector3 getForce() const;
+
+  // default ctor
+  SimulatedBody();
+
+  // location, radius, velocity, force, mass
+  SimulatedBody(const Vector3 &, int, const Vector3 &, const Vector3 &, int);
 
 private:
   Vector3 force_;

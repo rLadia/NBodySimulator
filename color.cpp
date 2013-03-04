@@ -1,5 +1,7 @@
 #include "color.h"
 
+// matches the given string to the enum values and returns the appropriate value
+// if no match was found, it returns kBlack
 Color::Color Color::toColor(const std::string &string)
 {
   std::string in = string;
@@ -21,6 +23,7 @@ Color::Color Color::toColor(const std::string &string)
   return Color::kBlack;
 }
 
+// return the string representation of the given color
 const char* Color::toString(Color color)
 {
   return color_names[color];
