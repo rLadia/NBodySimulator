@@ -1,6 +1,6 @@
 //Rodelle Ladia Jr.BOUNDARYSIZE
 //CSSE 342, Winter 2013 
-//Lab 2
+//Lab 4
 
 //gets rid of assertions
 //#define NDEBUG
