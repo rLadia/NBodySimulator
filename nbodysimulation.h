@@ -58,6 +58,7 @@ private:
     int index;
     SimulatedBody body;
     Color::Color color;
+    bool isDead;
   };
 
   unsigned int boundary_; //the length of the bounding cube
@@ -88,7 +89,7 @@ private:
   void calculateForcesFromBlackHoles();
 
   // Adds the force exerted on each body to each body's net force 
-  void updateForce(SimulatedBody &, SimulatedBody &);
+  void addForcesBetween(SimulatedBody &, SimulatedBody &);
   
   // compares the simulated bodies with the black holes, each other and the 
   // boundary. If any overlaps are found, the event is recorded as a collision
@@ -99,14 +100,17 @@ private:
   // the smaller body is removed from the list and the event is recorded
   void handleBodyOverlap();
 
+  // iterates through the list removing spheres marked as dead
+  void removeDeadBodies();
+
   // if the two bodies pointed to by the iterator are overlapping, this
   // function will return the body that should be deleted. If neither body
   // should be deleted, this function returns NULL.
   // *TODO* replace with collision decision matrix?
   const ManagedBodyIterator* toBeRemoved(const ManagedBodyIterator*, const ManagedBodyIterator*);
 
-  // records the event and erase the body from the list
-  void recordAndErase(std::list<ManagedBody> &, ManagedBodyIterator &, CollisionType);
+  // records the event and marks the body as ready to be removed from the list
+  void recordAndMarkForDeletion(ManagedBody &, CollisionType);
 
   // if any of the bodies collided with the boundary
   // the event is recorded and the body is removed from the simulation
