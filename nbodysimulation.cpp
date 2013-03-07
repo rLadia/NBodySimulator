@@ -146,36 +146,41 @@ void NBodySimulation::handleBodyOverlap()
     ManagedBodyIterator j = i; //not necessary to start at beginning
     ++j; //bodies do not collide with themselves
 
-    bool bodyWasErased = false; // flag set when body is erased
+    while(j != bodies_.end()) { // iterate through rest of list
+      if(COLLISION::isOverlapping(i->body, j->body)) { //overlap found
 
-    // iterate through list of free moving bodies
-    ManagedBodyIterator k;
-    for(k = freemoving_bodies_.begin(); k != freemoving_bodies_.end(); ++k) {
-        if(COLLISION::isOverlapping(i->body, k->body)) { // body and sphere are overlapping
+        
+        if(i->body.getRadius() > j->body.getRadius()) { // j is smaller
+          recordAndErase(bodies_, j, kCollision);
+        } else {
           recordAndErase(bodies_, i, kCollision);
-          bodyWasErased = true;
-          break; // do not compare i with rest of the free moving bodies
+          break; // do not compare i with rest of the bodies
         }
       }
-
-    if(! bodyWasErased) { // body still exists, compare with rest of list
-      while(j != bodies_.end()) { // iterate through rest of list
-        if(COLLISION::isOverlapping(i->body, j->body)) { //overlap found
-          if(i->body.getRadius() > j->body.getRadius()) { // j is smaller
-            recordAndErase(bodies_, j, kCollision);
-          } else {
-            recordAndErase(bodies_, i, kCollision);
-            bodyWasErased = true;
-            break; // do not compare i with rest of the bodies
-          }
-        }
-        else
-          ++j; // prevent double increment
-      };
-    }
+      else
+        ++j; // prevent double increment
+    };
     if(!bodyWasErased) // do not double increment
       i++;
   };
+}
+
+const NBodySimulation::ManagedBodyIterator* NBodySimulation::toBeRemoved(
+  const ManagedBodyIterator* left, const ManagedBodyIterator* right)
+{
+  // black spheres do not interact with each other
+  if((*left)->color == Color::kBlack && (*right)->color == Color::kBlack)
+    return NULL; 
+
+  // black spheres win all other interactions
+  if((*left)->color == Color::kBlack)
+    return right;
+  if((*right)->color == Color::kBlack)
+    return left;
+
+  // the smaller sphere will be removed
+  return 
+    (*left)->body.getRadius() <= (*right)->body.getRadius() ? left : right;
 }
 
 void NBodySimulation::recordAndErase(
