@@ -18,35 +18,45 @@ static const int GRAVITY = 10;
 class NBodySimulation {
 public:
   enum CollisionType {
-    kCollision, // collided with another sphere
-    kBlackHole, //collided with the black hole
-    kBoundary //collided with the boundary
+    kCollision, // collided with another body
+    kBlackHole, // collided with the black hole
+    kBoundary   // collided with the boundary
   };
 
   // Contains user accessible information about a collision
   struct Record {
-    int index; //the index of the sphere that collided
+    int index; // the index of the sphere that collided
     Color::Color color;
-    double time; //the time of the collision
-    CollisionType collision; // the type of collision that occured
+    double time; // the time of collision
+    CollisionType collision; // the type of collision that occurred
   };
 
-  // adds a body to be simulated
+  // Adds a body to be simulated.
+  // Each body consists of a color, position, radius and initial velocity. 
+  // Each body will be assigned an index based on the order that it was added
+  // to the simulation.
   void addBody(Color::Color, const Vector3 &, int, const Vector3 &);
   
-  // adds a black hole to be simulated
+  // Adds a black hole to be simulated
+  // A black hole consists of a position and a mass. Black holes are not 
+  // affected by other bodies and simply act as a point source of gravity.
   void addBlackHole(const Vector3 &, int);
 
-  // returns a vector containing the information 
-  // about all of the events that have occured
+  // Returns a vector containing records on all of the events that have 
+  // occurred. Each record consists of the index and color of body that was 
+  // removed, the time of collision, and the type of collision. 
   std::vector<Record> getSimulationResults();
 
-  // runs the simulation until no bodies exist
+  // Runs the simulation until no bodies remain
+  // Bodies will be removed from the simulation when they collide 
+  // with a black hole, the boundary, a black sphere, or a larger (by radius) 
+  // sphere. Every time a body is removed, a record will be added that can be
+  // accessed by calling getSimulationResults().
   // *TODO* add check for stable orbits
   void runSimulation(); 
 
-  // removes all simulated bodies and
-  // resets simulation to initial state
+  // removes all simulated bodies and black holes and resets the 
+  // simulation to its initial state
   void reset();
 
   NBodySimulation(unsigned int); //boundary size
@@ -77,53 +87,61 @@ private:
 
   typedef Color::Color Color;
   
-  // Updates the instantaneous force exerted on all of the simulated bodies
-  void updateAllForces();
-
-  // sets the net force of the simulated bodies to 0
+  // Sets the net force of each simulated body to 0
   void resetForces();
 
+  // Updates the net instantaneous force exerted on each simulated body
+  // There are gravitational forces acting between each body and from
+  // black holes. The black spheres are not affected by gravity.
+  void updateAllForces();
+
   // Calculates the instantaneous forces exerted on the simulated bodies
-  // by each other body, by the free moving bodies, and by the black holes
+  // from each other body and from the black hole
   void calculateForcesFromBodies();
   void calculateForcesFromBlackHoles();
 
-  // Adds the force exerted on each body to each body's net force 
+  // Adds the gravitational force between each body to each body's net force
   void addForcesBetween(SimulatedBody &, SimulatedBody &);
   
-  // compares the simulated bodies with the black holes, each other and the 
+  // Compares the simulated bodies with the black holes, each other and the 
   // boundary. If any overlaps are found, the event is recorded as a collision
   // and the body is marked as ready to be removed from the simulation
   void recordAndMarkCollisions();
 
-  // if any of the bodies collided with each other
-  // the smaller body is removed from the list and the event is recorded
+  // Compares each body to each other body and looks for overlaps.
+  // If any overlaps are found, the smaller body is marked for removal and the
+  // event is recorded as a collision. Black spheres are bigger than all other 
+  // spheres for purposes of comparisons.
   void handleBodyOverlap();
 
-  // iterates through the list removing spheres marked as dead
-  void removeDeadBodies();
+  // Compares each body to each black hole and looks for overlaps. If any 
+  // overlaps are found, the body is marked for removal and the event 
+  // is recorded as a black hole collision.
+  void handleBlackHoleOverlap(
+    std::list<ManagedBody> &, const std::list<SimulatedBody> &);
 
-  // if the two bodies pointed to by the iterator are overlapping, this
-  // function will return the body that should be deleted. If neither body
-  // should be deleted, this function returns NULL.
-  // *TODO* replace with collision decision matrix?
-  const ManagedBodyIterator* toBeRemoved(const ManagedBodyIterator*, const ManagedBodyIterator*);
-
-  // records the event and marks the body as ready to be removed from the list
-  void recordAndMarkForDeletion(ManagedBody &, CollisionType);
-
-  // if any of the bodies collided with the boundary
-  // the event is recorded and the body is removed from the simulation
+  // Compares each body to the boundary and looks for overlaps. If any 
+  // overlaps are found, the body is marked for removal and the event 
+  // is recorded as a boundary collision.
   void handleBoundaryOverlap(std::list<ManagedBody> &);
 
-  // if any of the bodies collided with a black hole
-  // the event is recorded and the body is removed from the list
-  void handleBlackHoleOverlap(std::list<ManagedBody> &, const std::list<SimulatedBody> &);
-
-  // returns: true if the sphere is overlapping the boundary
+  // Returns true if the sphere is in contact over overlapping the boundary
   bool isOverlappingBoundary(const Sphere &);
+
+  // Removes bodies from the simulation that have lost collisions
+  void removeDeadBodies();
+
+  // Returns the body that should be deleted in a collision.
+  // If neither body should be deleted, this function returns NULL.
+  // *TODO* replace with decision matrix?
+  const ManagedBodyIterator* toBeRemoved(
+    const ManagedBodyIterator*, const ManagedBodyIterator*);
+
+  // Records the event and marks the body as ready to be removed from the list
+  void recordAndMarkForDeletion(ManagedBody &, CollisionType);
   
-  // advances the simulation by the time period given
+  // Advances the simulation by the time period given
+  // Each body will move according to its current velocity and the net force
   void advance(double); 
 
   // Adds the collision event to the list of recorded events
