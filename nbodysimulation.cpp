@@ -14,7 +14,7 @@ void NBodySimulation::addBody(Color color, const Vector3& center,
   SimulatedBody body = 
     SimulatedBody(center, radius, velocity, Vector3(0,0,0), radius);
 
-  ManagedBody indexed_body = { index_, body, color };
+  ManagedBody indexed_body = { index_, body, color, false };
   
   bodies_.push_back(indexed_body);
 
@@ -42,6 +42,7 @@ void NBodySimulation::runSimulation()
 {
   while(! bodies_.empty()) { 
     handleOverlaps();
+    removeDeadBodies();
     updateAllForces();
     advance(TIMEINTERVAL);
   }
@@ -60,6 +61,8 @@ void NBodySimulation::reset()
 // given time interval
 void NBodySimulation::advance(double time) {
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
+    if(i->color == Color::kBlack)
+      i->body.setForce(Vector3(0,0,0)); // black bodies not affected by external forces
     i->body.advance(time);
   }
 
@@ -93,7 +96,7 @@ void NBodySimulation::calculateForcesFromBodies()
 
     //bodies do apply a force on themselves
     for(j++; j != bodies_.end(); ++j) {
-      updateForce(i->body, j->body);
+      addForcesBetween(i->body, j->body);
     }
     i++;
   };
@@ -105,12 +108,12 @@ void NBodySimulation::calculateForcesFromBlackHoles()
 {
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
     for(SimulatedBodyIterator j = black_holes_.begin(); j != black_holes_.end(); ++j)
-      updateForce(i->body, *j);
+      addForcesBetween(i->body, *j);
   }
 }
 
 // Adds the force exerted on each body to each body's net force 
-void NBodySimulation::updateForce(SimulatedBody &b1, SimulatedBody &b2)
+void NBodySimulation::addForcesBetween(SimulatedBody &b1, SimulatedBody &b2)
 {
   Gravity::PointMass m1 = { b1.getMass(), b1.getCenter() };
   Gravity::PointMass m2 = { b2.getMass(), b2.getCenter() };
@@ -120,8 +123,7 @@ void NBodySimulation::updateForce(SimulatedBody &b1, SimulatedBody &b2)
   b2.setForce(b2.getForce() + force * -1);
 }
 
-//*TODO* refactor this huge, monolithic function
-//n^2 traversal creating complete list of all possible collisions
+// handles collisions for body-body, body-blackhole and body-boundary
 void NBodySimulation::handleOverlaps()
 {
   if(bodies_.size() <= 0) //no spheres to check collisions with
@@ -139,30 +141,28 @@ void NBodySimulation::handleOverlaps()
 
 void NBodySimulation::handleBodyOverlap()
 {
-  ManagedBodyIterator i = bodies_.begin();
-  
-  // iterate through list of bodies
-  while(i != bodies_.end()) {
-    ManagedBodyIterator j = i; //not necessary to start at beginning
-    ++j; //bodies do not collide with themselves
+  ManagedBodyIterator i;
 
-    while(j != bodies_.end()) { // iterate through rest of list
-      if(COLLISION::isOverlapping(i->body, j->body)) { //overlap found
+  // iterate through list of bodies_
+  for(i = bodies_.begin(); i != bodies_.end(); ++i) {
+    ManagedBodyIterator j = i; // Iterator through rest of bodies_
 
-        
-        if(i->body.getRadius() > j->body.getRadius()) { // j is smaller
-          recordAndErase(bodies_, j, kCollision);
-        } else {
-          recordAndErase(bodies_, i, kCollision);
+    for(++j; j != bodies_.end(); ++j) { // not necessary to compare to itself
+      if(i->isDead || j->isDead) { // do not check dead spheres
+        // do nothing
+      } else if(COLLISION::isOverlapping(i->body, j->body)) { //overlap found
+
+        // remove the smaller sphere
+        const ManagedBodyIterator* removeThis = toBeRemoved(&i, &j);
+        if(*removeThis == i) {
+          recordAndMarkForDeletion(*i, kCollision);
           break; // do not compare i with rest of the bodies
+        } else if (*removeThis == j) {
+          recordAndMarkForDeletion(*j, kCollision);
         }
       }
-      else
-        ++j; // prevent double increment
-    };
-    if(!bodyWasErased) // do not double increment
-      i++;
-  };
+    }
+  } // so much nesting!
 }
 
 const NBodySimulation::ManagedBodyIterator* NBodySimulation::toBeRemoved(
@@ -183,13 +183,24 @@ const NBodySimulation::ManagedBodyIterator* NBodySimulation::toBeRemoved(
     (*left)->body.getRadius() <= (*right)->body.getRadius() ? left : right;
 }
 
-void NBodySimulation::recordAndErase(
-  std::list<ManagedBody> &list, 
-  ManagedBodyIterator &iter, 
-  NBodySimulation::CollisionType collsionType)
+void NBodySimulation::removeDeadBodies()
 {
-  recordEvent(*iter, time_, collsionType);
-  iter = list.erase(iter);
+  ManagedBodyIterator i = bodies_.begin();
+
+  // iterate through list of bodies
+  while(i != bodies_.end()) {
+    if(i->isDead)
+      i = bodies_.erase(i);
+    else // do not double increment
+      ++i;
+  };
+}
+
+void NBodySimulation::recordAndMarkForDeletion(
+  ManagedBody &body, NBodySimulation::CollisionType collsionType)
+{
+  recordEvent(body, time_, collsionType);
+  body.isDead = true;
 }
 
 // if any of the bodies collided with a black hole
@@ -197,36 +208,31 @@ void NBodySimulation::recordAndErase(
 void NBodySimulation::handleBlackHoleOverlap(
   std::list<ManagedBody> &bodies, const std::list<SimulatedBody> & blackholes)
 {
-  std::list<SimulatedBody>::const_iterator j;
+  ManagedBodyIterator i; // iterator through list of spheres
 
-  // iterate through list of bodies
-  ManagedBodyIterator i = bodies.begin();
-  while(i != bodies.end()) { 
-    // iterate through list of black holes
+  // iterator through list of black holes
+  std::list<SimulatedBody>::const_iterator j; 
+
+  for(i = bodies_.begin(); i != bodies_.end(); ++i) {
     for(j = blackholes.begin(); j != blackholes.end(); ++j) { 
-      if(COLLISION::isOverlapping(i->body, j->getCenter())) {
-        recordEvent(*i, time_, kBlackHole);
-        i = bodies.erase(i); //erase body from existence
-      } else {
-        ++i;
+      if(COLLISION::isOverlapping(i->body, j->getCenter())) { // overlap found
+        recordAndMarkForDeletion(*i, kBlackHole);
       }
     }
-  };
+  }
 }
 
 // if any of the bodies collided with the boundary
 // the event is recorded and the body is removed from the simulation
 void NBodySimulation::handleBoundaryOverlap(std::list<ManagedBody> &bodies)
 {
-  ManagedBodyIterator i = bodies.begin();
+  ManagedBodyIterator i;
 
   // iterate through the list of bodies
-  while(i != bodies.end()) {
+  for(i = bodies_.begin(); i != bodies_.end(); ++i) {
     if(isOverlappingBoundary(i->body)) { // if overlapping
-      recordEvent(*i, time_, kBoundary);
-      i = bodies.erase(i); // remove from simulation
-    } else
-      ++i;
+      recordAndMarkForDeletion(*i, kBoundary);
+    }
   };
 }
 
@@ -237,7 +243,7 @@ bool NBodySimulation::isOverlappingBoundary(const Sphere &sphere)
   int radius = sphere.getRadius();
 
   for(int i = 0; i < 3; ++i) {
-    if(center[i] + radius > boundary_ || center[i] - radius < 0)
+    if(center[i] + radius >= boundary_ || center[i] - radius <= 0)
       return true;
   }
   return false;
