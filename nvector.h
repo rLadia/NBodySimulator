@@ -46,10 +46,12 @@ class NVector
   
   // scalar addition and subtraction
   NVector<T, D>& operator += (const NVector<T, D> &);
-  NVector<T, D> & operator -= (const NVector<T, D> &);
+  NVector<T, D>& operator -= (const NVector<T, D> &);
   const NVector<T, D> operator + (const NVector<T, D> &) const;
   const NVector<T, D> operator - (const NVector<T, D> &) const;
 };
+
+typedef NVector<double ,3> Vector3;
 
 template<typename T, size_t D>
 NVector<T, D>::NVector() 
