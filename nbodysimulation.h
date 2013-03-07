@@ -99,6 +99,12 @@ private:
   // the smaller body is removed from the list and the event is recorded
   void handleBodyOverlap();
 
+  // if the two bodies pointed to by the iterator are overlapping, this
+  // function will return the body that should be deleted. If neither body
+  // should be deleted, this function returns NULL.
+  // *TODO* replace with collision decision matrix?
+  const ManagedBodyIterator* toBeRemoved(const ManagedBodyIterator*, const ManagedBodyIterator*);
+
   // records the event and erase the body from the list
   void recordAndErase(std::list<ManagedBody> &, ManagedBodyIterator &, CollisionType);
 
