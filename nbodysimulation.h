@@ -69,7 +69,6 @@ private:
 
   //contains the list of bodies to be simulated
   std::list<ManagedBody> bodies_;
-  std::list<ManagedBody> freemoving_bodies_;
   std::list<SimulatedBody> black_holes_;
 
   typedef std::list<NBodySimulation::ManagedBody>::iterator ManagedBodyIterator;
@@ -86,7 +85,6 @@ private:
   // Calculates the instantaneous forces exerted on the simulated bodies
   // by each other body, by the free moving bodies, and by the black holes
   void calculateForcesFromBodies();
-  void calculateForcesFromFreeMovingBodies();
   void calculateForcesFromBlackHoles();
 
   // Adds the force exerted on each body to each body's net force 

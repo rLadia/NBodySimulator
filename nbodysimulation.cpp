@@ -16,10 +16,7 @@ void NBodySimulation::addBody(Color color, const Vector3& center,
 
   ManagedBody indexed_body = { index_, body, color };
   
-  if(color == Color::kBlack)
-    freemoving_bodies_.push_back(indexed_body);
-  else
-     bodies_.push_back(indexed_body);
+  bodies_.push_back(indexed_body);
 
   index_++;
 }
@@ -43,7 +40,7 @@ std::vector<NBodySimulation::Record> NBodySimulation::getSimulationResults()
 // run until all spheres have collided
 void NBodySimulation::runSimulation()
 {
-  while(! bodies_.empty() || ! freemoving_bodies_.empty()) { 
+  while(! bodies_.empty()) { 
     handleOverlaps();
     updateAllForces();
     advance(TIMEINTERVAL);
@@ -54,7 +51,6 @@ void NBodySimulation::runSimulation()
 void NBodySimulation::reset()
 {
   bodies_.clear();
-  freemoving_bodies_.clear();
   black_holes_.clear();
   time_ = 0;
   index_ = 1;
@@ -66,9 +62,6 @@ void NBodySimulation::advance(double time) {
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
     i->body.advance(time);
   }
-  for(ManagedBodyIterator i = freemoving_bodies_.begin(); i != freemoving_bodies_.end(); ++i) {
-    i->body.advance(time);
-  }
 
   time_ += time;
 }
@@ -78,7 +71,6 @@ void NBodySimulation::updateAllForces()
 {
   resetForces(); //start from 0
   calculateForcesFromBodies();
-  calculateForcesFromFreeMovingBodies();
   calculateForcesFromBlackHoles();
 }
 
@@ -90,17 +82,6 @@ void NBodySimulation::resetForces()
     i->body.setForce(Vector3(0,0,0));
 }
 
-// Calculates the instantaneous forces exerted on the simulated bodies
-// by the free moving bodies
-void NBodySimulation::calculateForcesFromFreeMovingBodies()
-{
-  for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
-    for(ManagedBodyIterator j = freemoving_bodies_.begin(); j != freemoving_bodies_.end(); ++j) {
-      updateForce(i->body, j->body);
-      j->body.setForce(Vector3(0,0,0)); //massless bodies not affected by force
-    }
-  }
-}
 
 // Calculates the instantaneous forces exerted on the simulated bodies
 // by each other simulated body
@@ -143,7 +124,7 @@ void NBodySimulation::updateForce(SimulatedBody &b1, SimulatedBody &b2)
 //n^2 traversal creating complete list of all possible collisions
 void NBodySimulation::handleOverlaps()
 {
-  if(bodies_.size() <= 0 && freemoving_bodies_.size() <= 0) //no spheres to check collisions with
+  if(bodies_.size() <= 0) //no spheres to check collisions with
     return;
 
   // check if bodies overlap with black holes
@@ -154,7 +135,6 @@ void NBodySimulation::handleOverlaps()
 
   // check if bodies overlap with the boundary
   handleBoundaryOverlap(bodies_);
-  handleBoundaryOverlap(freemoving_bodies_);
 }
 
 void NBodySimulation::handleBodyOverlap()
