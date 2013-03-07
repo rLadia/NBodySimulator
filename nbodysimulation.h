@@ -93,8 +93,8 @@ private:
   
   // compares the simulated bodies with the black holes, each other and the 
   // boundary. If any overlaps are found, the event is recorded as a collision
-  // and the body is removed from the simulation
-  void handleOverlaps();
+  // and the body is marked as ready to be removed from the simulation
+  void recordAndMarkCollisions();
 
   // if any of the bodies collided with each other
   // the smaller body is removed from the list and the event is recorded

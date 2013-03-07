@@ -41,7 +41,7 @@ std::vector<NBodySimulation::Record> NBodySimulation::getSimulationResults()
 void NBodySimulation::runSimulation()
 {
   while(! bodies_.empty()) { 
-    handleOverlaps();
+    recordAndMarkCollisions();
     removeDeadBodies();
     updateAllForces();
     advance(TIMEINTERVAL);
