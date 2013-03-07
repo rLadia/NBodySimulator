@@ -124,7 +124,7 @@ void NBodySimulation::addForcesBetween(SimulatedBody &b1, SimulatedBody &b2)
 }
 
 // handles collisions for body-body, body-blackhole and body-boundary
-void NBodySimulation::handleOverlaps()
+void NBodySimulation::recordAndMarkCollisions()
 {
   if(bodies_.size() <= 0) //no spheres to check collisions with
     return;
