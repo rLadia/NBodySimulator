@@ -11,12 +11,15 @@
 #include <fstream>
 #include <sstream>
 
+#include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>
+
 
 #include "collision.h"
 #include "movingsphere.h"
 #include "nbodysimulator.h"
 #include "polynomial.h"
+#include "tablelogger.h"
 
 using std::string;
 
@@ -37,14 +40,11 @@ bool createBodiesFromFile(std::list<BodyPtr> *, std::ifstream &);
 void printCollisionResults(const std::vector<Record> &);
 void printTableHeader();
 
-//Returns a new string of length n, containing the given string centered and
-//surrounded on either side with an equal number of spaces
-//If the given string does not fit in the given length, it is truncated to fit
-string center(const string &, string::size_type);
-
 //uses string stream to convert a number to a string
 template<typename T>
 string numberToString(T);
+
+TableLogger table;
 
 int main()
 {
@@ -81,59 +81,22 @@ int main()
 // destroyed. Information is printed in a 3 column format
 void printCollisionResults(const std::vector<Record> &results) 
 {
-  static const unsigned int kIndexHeaderWidth = 5;
-  static const unsigned int kHeaderSpacing = 3;
-  static const unsigned int kColorHeaderWidth = 8;
-  static const unsigned int kTimeHeaderWidth = 8;
+  table.LogTableHead();
 
-  printTableHeader();
-  
+ 
   string collision_type[] = { "Collision", "Black Hole", "Boundary" };
 
-  using std::cout;
-  using std::left;
-  using std::setw;
+  std::vector<string> data;
 
-  string headerSpace(3, ' ');
-
-  std::vector<Record>::const_iterator i;
-  for(i = results.begin(); i != results.end(); ++i) {
-    cout << center(numberToString(i->index), kIndexHeaderWidth);
-    cout << headerSpace;
-    cout << left << setw(kColorHeaderWidth) << Color::toString(i->color);
-
-    int time = static_cast<int>(i->time);
-    cout << center(numberToString(i->time), kTimeHeaderWidth);
-    cout << headerSpace;
-    cout << collision_type[i->collision];
-    cout << "\n";
+  //std::vector<Record>::const_iterator i;
+  //for(i = results.begin(); i != results.end(); ++i) {
+  BOOST_FOREACH(const Record& i, results) {
+    data.push_back(numberToString(i.index));
+    data.push_back(Color::toString(i.color));
+    data.push_back(numberToString(i.time));
+    data.push_back(collision_type[i.collision]);
+    table.LogTableRow(data);
   }
-}
-
-// prints the table header
-void printTableHeader()
-{
-  using std::cout;
-  cout << "Sphere Ellimination Records" << "\n";
-  cout << "==========================" << "\n";
-  cout << "Index   Color   Time (s)   Event type" << "\n";
-  cout << "-----   -----   --------   ----------" << "\n";
-}
-
-//Returns a new string of length n, containing the given string centered
-//surrounded on either side with an equal number of spaces
-//If the given string does not fit in the given length, it is truncated to fit
-string center(const string &s, string::size_type length) 
-{
-  if(s.length() > length) 
-    return s.substr(0, length);
-
-  string result(length, ' ');
-  int spaces = (length - s.length()) / 2;
-
-  for(unsigned int i = 0; i < s.length(); ++i)
-    result[i+spaces] = s[i];
-  return result;
 }
 
 // uses the information from the file to add bodies to the simulation
