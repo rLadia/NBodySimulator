@@ -2,12 +2,13 @@
 #define LADIA_NBODY_DISPLAY
 
 #include <vector>
+#include <boost/multi_array.hpp>
 #include "nvector.h"
 
 class Display 
 {
 public:
-  typedef NVector<double, 2> Point;
+  typedef NVector<int, 2> Point;
 
   void Draw(const std::vector<Point> &);
   
@@ -16,8 +17,15 @@ public:
 
 private:
   // dimensions of data to be displayed
-  int height_;
-  int width_;
+  int model_height_;
+  int model_width_;
+
+  int view_height_;
+  int view_width_;
+
+  typedef boost::multi_array<bool, 2> array_type;
+
+  array_type grid_;
 };
 
 #endif
