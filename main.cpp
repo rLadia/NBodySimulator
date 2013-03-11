@@ -13,7 +13,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>
-
+#include <boost/lexical_cast.hpp>
 
 #include "collision.h"
 #include "movingsphere.h"
@@ -33,18 +33,13 @@ typedef NBodySimulator::Record Record;
 // returns false if there was an error opening the file
 bool createBodiesFromFile(std::list<BodyPtr> *, std::ifstream &);
 
-
-
 // Prints out each sphere's index, its time of collision, and how it was
 // destroyed. Information is printed in a 3 column format
 void printCollisionResults(const std::vector<Record> &);
-void printTableHeader();
 
 //uses string stream to convert a number to a string
 template<typename T>
 string numberToString(T);
-
-TableLogger table;
 
 int main()
 {
@@ -53,7 +48,6 @@ int main()
   
   NBodySimulator simulation(kBoundarySize);
 
-  
   std::list<BodyPtr> bodies;
 
   // add the bodies to the simulation
@@ -81,8 +75,17 @@ int main()
 // destroyed. Information is printed in a 3 column format
 void printCollisionResults(const std::vector<Record> &results) 
 {
-  table.LogTableHead();
+  std::string title("Sphere Elimination Records\n==========================");
 
+  std::vector<TableLogger::HeaderStyle> header;
+  typedef TableLogger::Justification Just;
+  header.push_back(std::make_pair("Index", Just::kCenter));
+  header.push_back(std::make_pair("Color", Just::kLeft));
+  header.push_back(std::make_pair("Time", Just::kCenter));
+  header.push_back(std::make_pair("Event Type", Just::kLeft));
+  TableLogger table(title, header);
+
+  table.LogTableHead();
  
   string collision_type[] = { "Collision", "Black Hole", "Boundary" };
 
@@ -91,9 +94,9 @@ void printCollisionResults(const std::vector<Record> &results)
   //std::vector<Record>::const_iterator i;
   //for(i = results.begin(); i != results.end(); ++i) {
   BOOST_FOREACH(const Record& i, results) {
-    data.push_back(numberToString(i.index));
+    data.push_back(boost::lexical_cast<std::string, int>(i.index));
     data.push_back(Color::toString(i.color));
-    data.push_back(numberToString(i.time));
+    data.push_back(boost::lexical_cast<std::string, double>(i.time));
     data.push_back(collision_type[i.collision]);
     table.LogTableRow(data);
   }
