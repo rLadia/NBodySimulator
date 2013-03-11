@@ -9,20 +9,22 @@ class TableLogger
 {
 public:
   enum Justification {
-    left, right, center
+    kLeft,
+    kRight,
+    kCenter
   };
 
   // column header, justification
   typedef std::pair<std::string, Justification> HeaderStyle;
 
-  // initialize with header
-  TableLogger();
-  TableLogger(const std::vector<HeaderStyle> &);
+  // initialize with title and header
+  TableLogger(const std::string&, const std::vector<HeaderStyle> &);
 
   void LogTableHead();
   void LogTableRow(std::vector<std::string> data);
 
 private:
+  std::string title_;
   std::vector<HeaderStyle> header_;
   std::string header_space_;
 
