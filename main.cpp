@@ -11,9 +11,11 @@
 #include <fstream>
 #include <sstream>
 
+#include <boost/scoped_ptr.hpp>
+
 #include "collision.h"
 #include "movingsphere.h"
-#include "nbodysimulation.h"
+#include "nbodysimulator.h"
 #include "polynomial.h"
 
 using std::string;
@@ -21,12 +23,14 @@ using std::string;
 static const char* kFileName = "sphere.txt"; // file location
 static const int kBoundarySize = 1000; // default boundary size
 
-// uses the information from the file to add bodies to the simulation
-// returns false if there was an error opening the file
-bool createBodiesFromFile(NBodySimulation &, std::ifstream &);
-bool createBlackHoleFromFile(NBodySimulation &, std::ifstream &);
+typedef NBodySimulator::BodyPtr BodyPtr;
+typedef NBodySimulator::Record Record;
 
-typedef NBodySimulation::Record Record;
+// uses the information from the file to add bodies to the list of bodies
+// returns false if there was an error opening the file
+bool createBodiesFromFile(std::list<BodyPtr> *, std::ifstream &);
+
+
 
 // Prints out each sphere's index, its time of collision, and how it was
 // destroyed. Information is printed in a 3 column format
@@ -47,17 +51,27 @@ int main()
   MovingSphere sphere;
   std::ifstream file(kFileName);
   
-  NBodySimulation simulation(kBoundarySize);
+  NBodySimulator simulation(kBoundarySize);
+
+  
+  std::list<BodyPtr> bodies;
 
   // add the bodies to the simulation
-  if(!createBodiesFromFile(simulation, file)) { 
+  if(!createBodiesFromFile(&bodies, file)) { 
     std::cerr << "File was not successfully opened.\n";
     return EXIT_FAILURE;
   }
   file.close();
 
-  simulation.runSimulation();
-  std::vector<Record> results = simulation.getSimulationResults();
+  simulation.SetBodyList(bodies);
+
+  std::vector<Record> results;
+  do {
+    simulation.RunSimulation(0.01);
+    results = simulation.getSimulationResults();
+  } while(results.empty());
+    
+
   printCollisionResults(results);
 
   return EXIT_SUCCESS;
@@ -89,7 +103,7 @@ void printCollisionResults(const std::vector<Record> &results)
     cout << left << setw(kColorHeaderWidth) << Color::toString(i->color);
 
     int time = static_cast<int>(i->time);
-    cout << center(numberToString(time), kTimeHeaderWidth);
+    cout << center(numberToString(i->time), kTimeHeaderWidth);
     cout << headerSpace;
     cout << collision_type[i->collision];
     cout << "\n";
@@ -123,39 +137,29 @@ string center(const string &s, string::size_type length)
 }
 
 // uses the information from the file to add bodies to the simulation
-bool createBodiesFromFile(NBodySimulation &simulation, std::ifstream &file)
+bool createBodiesFromFile(std::list<BodyPtr> *bodies, std::ifstream &file)
 {
   if(!file.is_open())
    return false; //file was not able to be read
 
-  if(!createBlackHoleFromFile(simulation, file))
-    return false; // could not read black hole
-
   do { //read rest of bodies
-    string c;
     int x, y, z, r, vx, vy, vz;
 
-    file >> c >> x >> y >> z >> r >> vx >> vy >> vz;
+    file >> x >> y >> z >> r >> vx >> vy >> vz;
 
     if(file.fail())
        break;
 
-    Color::Color color = Color::toColor(c);
-    simulation.addBody(color, Vector3(x, y, z), r, Vector3(vx, vy, vz));
+    BodyPtr body(new SimulatedBody(
+      Vector3(x, y, z), 
+      r, 
+      Vector3(vx, vy, vz), 
+      Vector3(0,0,0),
+      r)
+    );
+    bodies->push_back(body);
   } while(file.good());
   
-  return true;
-}
-
-// adds the black hole to the simulation
-bool createBlackHoleFromFile(NBodySimulation &simulation, std::ifstream &file)
-{
-  int x, y, z, m;
-  file >> x >> y >> z >> m;
-  if(file.fail()) 
-    return false; // file could not be read
-
-  simulation.addBlackHole(Vector3(x, y, z), m);
   return true;
 }
 

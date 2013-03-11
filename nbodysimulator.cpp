@@ -1,55 +1,49 @@
-#include "nbodysimulation.h"
+#include "nbodysimulator.h"
+#include <boost/foreach.hpp>
 
-typedef NBodySimulation::Record Record;
+typedef NBodySimulator::Record Record;
+typedef boost::shared_ptr<SimulatedBody> BodyPtr;
 
-NBodySimulation::NBodySimulation(unsigned int boundary) 
+NBodySimulator::NBodySimulator(int boundary) 
   : index_(1), boundary_(boundary), time_(0)
 {}
 
 // adds a body to be simulated
-void NBodySimulation::addBody(Color color, const Vector3& center,
-  int radius, const Vector3& velocity)
+void NBodySimulator::SetBodyList(const std::list<BodyPtr> &bodies)
 {
   // initializes with acceleration of 0 and mass equal to radius
-  SimulatedBody body = 
-    SimulatedBody(center, radius, velocity, Vector3(0,0,0), radius);
+  BOOST_FOREACH(BodyPtr b, bodies) {
+    SimulatedBody body = SimulatedBody(
+      b->getCenter(), 
+      b->getRadius(), 
+      b->getVelocity(), 
+      Vector3(0,0,0),   // initial force set to 0
+      b->getRadius()
+    );
 
-  ManagedBody indexed_body = { index_, body, color, false };
-  
-  bodies_.push_back(indexed_body);
-
-  index_++;
-}
-
-// adds a body to be simulated
-void NBodySimulation::addBlackHole(const Vector3& center, int mass)
-{
-  SimulatedBody black_hole;
-  black_hole.setCenter(center);
-  black_hole.setMass(mass);
-  black_holes_.push_back(black_hole);
+    ManagedBody indexed_body = { index_, body, Color::kBlue, false };
+    bodies_.push_back(indexed_body);
+    index_++;
+  }
 }
 
 //Returns a vector of records detailing how and when the bodies collided
-std::vector<NBodySimulation::Record> NBodySimulation::getSimulationResults()
+std::vector<NBodySimulator::Record> NBodySimulator::getSimulationResults()
 {
   return records_;
 }
 
 //*TODO* add check for stable orbits
 // run until all spheres have collided
-void NBodySimulation::runSimulation()
+void NBodySimulator::RunSimulation(const double timeinterval)
 {
-  while(! bodies_.empty()) { 
-    recordAndMarkCollisions();
-    removeDeadBodies();
-    updateAllForces();
-    advance(kTimeInterval);
-  }
+  updateAllForces();
+  advance(timeinterval);
+  recordAndMarkCollisions();
 }
 // removes all simulated bodies and
 // resets simulation to initial state
-void NBodySimulation::reset()
+void NBodySimulator::reset()
 {
   bodies_.clear();
   black_holes_.clear();
@@ -59,7 +53,7 @@ void NBodySimulation::reset()
 
 // calculates the forces for the current frame and advances the spheres by the 
 // given time interval
-void NBodySimulation::advance(double time) {
+void NBodySimulator::advance(const double time) {
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
     if(i->color == Color::kBlack)
       i->body.setForce(Vector3(0,0,0)); // black bodies not affected by external forces
@@ -70,17 +64,16 @@ void NBodySimulation::advance(double time) {
 }
 
 // Updates the instantaneous force exerted on all of the simulated bodies
-void NBodySimulation::updateAllForces()
+void NBodySimulator::updateAllForces()
 {
   resetForces(); //start from 0
   calculateForcesFromBodies();
-  calculateForcesFromBlackHoles();
 }
 
 // set the forces of each simulated body to 0
-void NBodySimulation::resetForces() 
+void NBodySimulator::resetForces() 
 {
-  typedef std::list<NBodySimulation::ManagedBody>::iterator ManagedBodyIterator;
+  typedef std::list<NBodySimulator::ManagedBody>::iterator ManagedBodyIterator;
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i)
     i->body.setForce(Vector3(0,0,0));
 }
@@ -88,7 +81,7 @@ void NBodySimulation::resetForces()
 
 // Calculates the instantaneous forces exerted on the simulated bodies
 // by each other simulated body
-void NBodySimulation::calculateForcesFromBodies() 
+void NBodySimulator::calculateForcesFromBodies() 
 {
   ManagedBodyIterator i = bodies_.begin();
   while(i != bodies_.end()) {
@@ -104,7 +97,7 @@ void NBodySimulation::calculateForcesFromBodies()
 
 // Calculates the instantaneous forces exerted on the simulated bodies
 // by the black holes
-void NBodySimulation::calculateForcesFromBlackHoles()
+void NBodySimulator::calculateForcesFromBlackHoles()
 {
   for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
     for(SimulatedBodyIterator j = black_holes_.begin(); j != black_holes_.end(); ++j)
@@ -113,7 +106,7 @@ void NBodySimulation::calculateForcesFromBlackHoles()
 }
 
 // Adds the force exerted on each body to each body's net force 
-void NBodySimulation::addForcesBetween(SimulatedBody &b1, SimulatedBody &b2)
+void NBodySimulator::addForcesBetween(SimulatedBody &b1, SimulatedBody &b2)
 {
   Gravity::PointMass m1 = { b1.getMass(), b1.getCenter() };
   Gravity::PointMass m2 = { b2.getMass(), b2.getCenter() };
@@ -124,7 +117,7 @@ void NBodySimulation::addForcesBetween(SimulatedBody &b1, SimulatedBody &b2)
 }
 
 // handles collisions for body-body, body-blackhole and body-boundary
-void NBodySimulation::recordAndMarkCollisions()
+void NBodySimulator::recordAndMarkCollisions()
 {
   if(bodies_.size() <= 0) //no spheres to check collisions with
     return;
@@ -139,7 +132,7 @@ void NBodySimulation::recordAndMarkCollisions()
   handleBoundaryOverlap(bodies_);
 }
 
-void NBodySimulation::handleBodyOverlap()
+void NBodySimulator::handleBodyOverlap()
 {
   ManagedBodyIterator i;
 
@@ -165,7 +158,7 @@ void NBodySimulation::handleBodyOverlap()
   } // so much nesting!
 }
 
-const NBodySimulation::ManagedBodyIterator* NBodySimulation::toBeRemoved(
+const NBodySimulator::ManagedBodyIterator* NBodySimulator::toBeRemoved(
   const ManagedBodyIterator* left, const ManagedBodyIterator* right)
 {
   // black spheres do not interact with each other
@@ -183,7 +176,7 @@ const NBodySimulation::ManagedBodyIterator* NBodySimulation::toBeRemoved(
     (*left)->body.getRadius() <= (*right)->body.getRadius() ? left : right;
 }
 
-void NBodySimulation::removeDeadBodies()
+void NBodySimulator::removeDeadBodies()
 {
   ManagedBodyIterator i = bodies_.begin();
 
@@ -196,8 +189,8 @@ void NBodySimulation::removeDeadBodies()
   };
 }
 
-void NBodySimulation::recordAndMarkForDeletion(
-  ManagedBody &body, NBodySimulation::CollisionType collsionType)
+void NBodySimulator::recordAndMarkForDeletion(
+  ManagedBody &body, NBodySimulator::CollisionType collsionType)
 {
   recordEvent(body, time_, collsionType);
   body.isDead = true;
@@ -205,7 +198,7 @@ void NBodySimulation::recordAndMarkForDeletion(
 
 // if any of the bodies collided with a black hole
 // the event is recorded and the body is removed from the list
-void NBodySimulation::handleBlackHoleOverlap(
+void NBodySimulator::handleBlackHoleOverlap(
   std::list<ManagedBody> &bodies, const std::list<SimulatedBody> & blackholes)
 {
   ManagedBodyIterator i; // iterator through list of spheres
@@ -224,7 +217,7 @@ void NBodySimulation::handleBlackHoleOverlap(
 
 // if any of the bodies collided with the boundary
 // the event is recorded and the body is removed from the simulation
-void NBodySimulation::handleBoundaryOverlap(std::list<ManagedBody> &bodies)
+void NBodySimulator::handleBoundaryOverlap(std::list<ManagedBody> &bodies)
 {
   ManagedBodyIterator i;
 
@@ -237,7 +230,7 @@ void NBodySimulation::handleBoundaryOverlap(std::list<ManagedBody> &bodies)
 }
 
 // returns: true if the sphere is overlapping the boundary
-bool NBodySimulation::isOverlappingBoundary(const Sphere &sphere)
+bool NBodySimulator::isOverlappingBoundary(const Sphere &sphere)
 {
   Vector3 center = sphere.getCenter();
   int radius = sphere.getRadius();
@@ -250,8 +243,8 @@ bool NBodySimulation::isOverlappingBoundary(const Sphere &sphere)
 }
 
  // Adds the collision event to the list of recorded events
-void NBodySimulation::recordEvent(
-  const ManagedBody &body, double time, NBodySimulation::CollisionType type)
+void NBodySimulator::recordEvent(
+  const ManagedBody &body, double time, NBodySimulator::CollisionType type)
 {
   Record record = { body.index, body.color, time, type };
   records_.push_back(record);

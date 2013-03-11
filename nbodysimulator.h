@@ -1,10 +1,12 @@
-#ifndef LADIA_CSS342_NBODYSIMULATION_H
-#define LADIA_CSS342_NBODYSIMULATION_H
+#ifndef LADIA_CSS342_NBODYSIMULATOR_H
+#define LADIA_CSS342_NBODYSIMULATOR_H
 
 #include <algorithm>
 #include <cassert>
 #include <list>
 #include <vector>
+
+#include <boost/shared_ptr.hpp>
 
 #include "color.h"
 #include "collision.h"
@@ -15,7 +17,7 @@ static const double kTimeInterval = .01;
 static const int kGravity = 10;
 
 // Simulates the motion of 3d bodies through space
-class NBodySimulation {
+class NBodySimulator {
 public:
   enum CollisionType {
     kCollision, // collided with another body
@@ -31,35 +33,25 @@ public:
     CollisionType collision; // the type of collision that occurred
   };
 
-  // Adds a body to be simulated.
-  // Each body consists of a color, position, radius and initial velocity. 
-  // Each body will be assigned an index based on the order that it was added
-  // to the simulation.
-  void addBody(Color::Color, const Vector3 &, int, const Vector3 &);
-  
-  // Adds a black hole to be simulated
-  // A black hole consists of a position and a mass. Black holes are not 
-  // affected by other bodies and simply act as a point source of gravity.
-  void addBlackHole(const Vector3 &, int);
+  typedef boost::shared_ptr<SimulatedBody> BodyPtr;
+
+  void SetBodyList(const std::list<BodyPtr> &);
 
   // Returns a vector containing records on all of the events that have 
   // occurred. Each record consists of the index and color of body that was 
   // removed, the time of collision, and the type of collision. 
   std::vector<Record> getSimulationResults();
 
-  // Runs the simulation until no bodies remain
-  // Bodies will be removed from the simulation when they collide 
-  // with a black hole, the boundary, a black sphere, or a larger (by radius) 
-  // sphere. Every time a body is removed, a record will be added that can be
-  // accessed by calling getSimulationResults().
-  // *TODO* add check for stable orbits
-  void runSimulation(); 
+  // Runs the simulation for the time period given
+  // sphere. Every time a body collides, a record will be added that can be
+  // accessed by calling getSimulationResults()
+  void RunSimulation(const double); 
 
   // removes all simulated bodies and black holes and resets the 
   // simulation to its initial state
   void reset();
 
-  NBodySimulation(unsigned int); //boundary size
+  NBodySimulator(int); //boundary size
 
 private:
 
@@ -82,7 +74,7 @@ private:
   std::list<ManagedBody> bodies_;
   std::list<SimulatedBody> black_holes_;
 
-  typedef std::list<NBodySimulation::ManagedBody>::iterator ManagedBodyIterator;
+  typedef std::list<NBodySimulator::ManagedBody>::iterator ManagedBodyIterator;
   typedef std::list<SimulatedBody>::iterator SimulatedBodyIterator;
 
   typedef Color::Color Color;
@@ -142,14 +134,10 @@ private:
   
   // Advances the simulation by the time period given
   // Each body will move according to its current velocity and the net force
-  void advance(double); 
+  void advance(const double); 
 
   // Adds the collision event to the list of recorded events
   void recordEvent(const ManagedBody&, double, CollisionType);
-
-  // do not make a copy of this class
-  NBodySimulation(const NBodySimulation &);
-  NBodySimulation& operator=(const NBodySimulation &);
 };
 
 #endif
