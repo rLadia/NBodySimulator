@@ -5,10 +5,9 @@
 #include <cstddef>
 
 // Represents an n-dimensional Vector
-template<typename T, std::size_t D> //type, dimensions
+template<typename T, int D> //type, dimensions
 class NVector
 {
-  typedef std::size_t size_t;
 	T val_[D];
   
   public: 
@@ -30,8 +29,8 @@ class NVector
 
   // Allows iteration through the components of the vector
   // pre: the given index is within the range of dimensions of the vector
-  T& operator[](size_t);
-  const T operator[](const size_t) const; 
+  T& operator[](int);
+  const T operator[](const int) const; 
 
   // setters
   void setX(const T);
@@ -53,13 +52,13 @@ class NVector
 
 typedef NVector<double, 3> Vector3;
 
-template<typename T, size_t D>
+template<typename T, int D>
 NVector<T, D>::NVector() 
 {
   assert(("NVector size must be > 0", D > 0));
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 NVector<T, D>::NVector(const T x, const T y) 
 {
   assert(("Vector size must be 2 when initializing with 2 parameters", D == 2));
@@ -67,7 +66,7 @@ NVector<T, D>::NVector(const T x, const T y)
   val_[1] = y;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 NVector<T, D>::NVector(const T x, const T y, const T z) 
 {
   assert(("Vector size must be 3 when initializing with 3 parameters", D == 3));
@@ -76,7 +75,7 @@ NVector<T, D>::NVector(const T x, const T y, const T z)
   val_[2] = z;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 void NVector<T, D>::transform(const NVector<T, D>& NVector) {
   for(int i = 0; i < D; ++i)
     val_[i] += NVector[i];
@@ -84,7 +83,7 @@ void NVector<T, D>::transform(const NVector<T, D>& NVector) {
 
 // returns the dot product of the vector
 // x^2 + y^2 + z^2
-template<typename T, size_t D>
+template<typename T, int D>
 T NVector<T, D>::dotProduct(const NVector<T, D>& NVector1, const NVector<T, D>& NVector2) {
   T sum = 0;
   for(int i = 0; i < D; ++i)
@@ -93,14 +92,14 @@ T NVector<T, D>::dotProduct(const NVector<T, D>& NVector1, const NVector<T, D>& 
 }
 
 //getters
-template<typename T, size_t D>
+template<typename T, int D>
 T NVector<T, D>::y() const {
   assert(("y not defined with NVector size less than 2", D >= 2));
   return val_[1];
 }
 
 
-template<typename T, size_t D>
+template<typename T, int D>
 T NVector<T, D>::z() const {
   assert(("z not defined with NVector size less than 3", D >= 3));
   return val_[2];
@@ -108,8 +107,8 @@ T NVector<T, D>::z() const {
 
 // Allows iteration through the components of the vector
 // pre: the given index is within the range of dimensions of the vector
-template<typename T, size_t D>
-T& NVector<T, D>::operator[](size_t index)
+template<typename T, int D>
+T& NVector<T, D>::operator[](int index)
 {
   assert(("Index out of bounds", index >= 0 && index < D));
   return val_[index];
@@ -117,37 +116,37 @@ T& NVector<T, D>::operator[](size_t index)
 
 // Allows iteration through the components of the vector
 // pre: the given index is within the range of dimensions of the vector
-template<typename T, size_t D>
-const T NVector<T, D>::operator[](const size_t index) const {
+template<typename T, int D>
+const T NVector<T, D>::operator[](const int index) const {
   assert(("Index out of bounds", index >= 0 && index < D));
   return val_[index];
 }
 
 //setters
-template<typename T, size_t D>
+template<typename T, int D>
 void NVector<T, D>::setX(const T x) {
   val_[0] = x;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 void NVector<T, D>::setY(const T y) {
   assert(("y not defined with NVector size less than 2", D >= 2));
   val_[1] = y;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 void NVector<T, D>::setZ(const T z) {
   assert(("z not defined with NVector size less than 3", D >= 3));
   val_[2] = z;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 T NVector<T, D>::x() const {
   return val_[0];
 }
 
 //overloaded operators
-template<typename T, size_t D>
+template<typename T, int D>
 NVector<T, D>& NVector<T, D>::operator *= (const double scalar) 
 {
   for(int i = 0; i < D; ++i)
@@ -155,7 +154,7 @@ NVector<T, D>& NVector<T, D>::operator *= (const double scalar)
   return *this;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 const NVector<T, D> NVector<T, D>::operator * (const double scalar) const
 {
   NVector<T, D> result = *this;
@@ -163,7 +162,7 @@ const NVector<T, D> NVector<T, D>::operator * (const double scalar) const
   return result;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 NVector<T, D>& NVector<T, D>::operator *= (const int scalar) 
 {
   for(int i = 0; i < D; ++i)
@@ -171,7 +170,7 @@ NVector<T, D>& NVector<T, D>::operator *= (const int scalar)
   return *this;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 const NVector<T, D> NVector<T, D>::operator * (const int scalar) const
 {
   NVector<T, D> result = *this;
@@ -179,7 +178,7 @@ const NVector<T, D> NVector<T, D>::operator * (const int scalar) const
   return result;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 NVector<T, D>& NVector<T, D>::operator += (const NVector<T, D> &rhs) 
 {
   for(int i = 0; i < D; ++i)
@@ -187,7 +186,7 @@ NVector<T, D>& NVector<T, D>::operator += (const NVector<T, D> &rhs)
   return *this;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 const NVector<T, D> NVector<T, D>::operator + (const NVector<T, D> &rhs) const
 {
   NVector<T, D> result = *this;
@@ -195,7 +194,7 @@ const NVector<T, D> NVector<T, D>::operator + (const NVector<T, D> &rhs) const
   return result;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 NVector<T, D>& NVector<T, D>::operator -= (const NVector<T, D> &rhs)
 {
   for(int i = 0; i < D; ++i)
@@ -203,7 +202,7 @@ NVector<T, D>& NVector<T, D>::operator -= (const NVector<T, D> &rhs)
   return *this;
 }
 
-template<typename T, size_t D>
+template<typename T, int D>
 const NVector<T, D> NVector<T, D>::operator - (const NVector<T, D> &rhs) const
 {
   NVector<T, D> result = *this;
