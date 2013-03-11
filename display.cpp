@@ -20,7 +20,7 @@ void Display::Draw(const std::vector<Point> &points)
   for(int i = 0; i < view_height_; ++i) {
     for(int j = 0; j < view_width_; ++j) {
       if(grid_[j][i])
-        std::cout << "X";
+        std::cout << "O";
       else 
         std::cout << " ";
     }
