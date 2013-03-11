@@ -28,6 +28,7 @@
 
 using std::string;
 
+typedef NBodySimulator::Body Body;
 typedef NBodySimulator::BodyList BodyList;
 
 static const char* kFileName = "sphere.txt"; // file location
@@ -43,15 +44,12 @@ string numberToString(T);
 
 int main()
 {
-  /*
   Display display(1000,1000);
   using namespace boost::timer;
   const nanosecond_type one_second = 1000000000LL;
 
-  typedef Display::Point Point;
-  std::vector<Display::Point> points;
-  points.push_back(Display::Point(500, 500));
 
+  /*
   for(int i = 0; i < 10; ++i) {
     boost::timer::cpu_timer timer;
     const cpu_times elapsed_times(timer.elapsed());
@@ -73,7 +71,9 @@ int main()
 
   NBodySimulator::BodyList bodies;
 
-  
+  typedef Display::Point Point;
+  std::vector<Display::Point> points;
+
   // add the bodies to the simulation
   if(!createBodiesFromFile(bodies, file)) { 
     std::cerr << "File was not successfully opened.\n";
@@ -83,8 +83,28 @@ int main()
 
   simulation.SetBodyList(bodies);
 
-  for(int i = 0; i < 5000; ++i)
-    simulation.RunSimulation(1);
+  boost::timer::cpu_timer timer;
+  for(int i = 0; i < 50000; ++i) {
+    
+    if(i % 250 == 0) { // once a second
+      points.clear();
+      BOOST_FOREACH(Body b, bodies) {
+        int x = static_cast<int>(b->getCenter().x());
+        int y = static_cast<int>(b->getCenter().y());
+        points.push_back(Point(x, y));
+      }
+      display.Draw(points);
+      const cpu_times elapsed_times(timer.elapsed());
+      nanosecond_type elapsed = elapsed_times.wall + elapsed_times.system;
+      nanosecond_type time = one_second - elapsed;
+      nanosecond_type milliseconds = time / 1000000;
+
+      // pause for the rest of the second
+      //boost::this_thread::sleep(boost::posix_time::milliseconds(milliseconds/5));
+      timer = boost::timer::cpu_timer();
+    } 
+    simulation.RunSimulation(0.01);
+  }
 
   return EXIT_SUCCESS;
 }
@@ -108,7 +128,7 @@ bool createBodiesFromFile(BodyList &bodies, std::ifstream &file)
       r, 
       Vector3(vx, vy, vz), 
       Vector3(0,0,0),
-      r));
+      r*50));
     bodies.push_back(body);
   } while(file.good());
   
