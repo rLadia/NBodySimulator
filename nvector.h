@@ -4,12 +4,6 @@
 #include <cassert>
 #include <cstddef>
 
-template<typename T, std::size_t D>
-class NVector<double, 3>;
-
-//public typedefs
-typedef NVector<double ,3> Vector3;
-
 // Represents an n-dimensional Vector
 template<typename T, std::size_t D> //type, dimensions
 class NVector
@@ -56,6 +50,8 @@ class NVector
   const NVector<T, D> operator + (const NVector<T, D> &) const;
   const NVector<T, D> operator - (const NVector<T, D> &) const;
 };
+
+typedef NVector<double, 3> Vector3;
 
 template<typename T, size_t D>
 NVector<T, D>::NVector() 
