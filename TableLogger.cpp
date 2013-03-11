@@ -1,21 +1,21 @@
 #include "TableLogger.h"
 #include <boost/foreach.hpp>
 
-TableLogger::TableLogger()
-  :header_space_(' ', 3)
-{}
-
-TableLogger::TableLogger(const std::vector<HeaderStyle> &header)
-  :header_(header), header_space_(' ', 3)
+TableLogger::TableLogger(
+  const std::string& title, const std::vector<HeaderStyle> &header)
+  :title_(title), header_(header), header_space_(3, ' ')
 {}
 
 void TableLogger::LogTableHead()
 {
   using std::cout;
-  cout << "Sphere Ellimination Records" << "\n";
-  cout << "==========================" << "\n";
-  cout << "Index   Color   Time (s)   Event type" << "\n";
-  cout << "-----   -----   --------   ----------" << "\n";
+
+  cout << title_ << "\n";
+
+  BOOST_FOREACH(const HeaderStyle& h, header_) {
+    cout << h.first << header_space_;
+  }
+  cout << "\n";
 }
 
 void TableLogger::LogTableRow(std::vector<std::string> data)
@@ -24,10 +24,10 @@ void TableLogger::LogTableRow(std::vector<std::string> data)
 
   using std::cout;
   BOOST_FOREACH(const std::string& s, data) {
-    cout << center(s, kIndexHeaderWidth);
+    cout << center(s, 8);
     cout << header_space_;
-    cout << "\n";
   }
+  cout << "\n";
 }
 
 std::string TableLogger::center(const std::string &s, std::string::size_type length) 
