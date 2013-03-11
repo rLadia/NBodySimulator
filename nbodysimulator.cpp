@@ -54,12 +54,9 @@ void NBodySimulator::reset()
 // calculates the forces for the current frame and advances the spheres by the 
 // given time interval
 void NBodySimulator::advance(const double time) {
-  for(ManagedBodyIterator i = bodies_.begin(); i != bodies_.end(); ++i) {
-    if(i->color == Color::kBlack)
-      i->body.setForce(Vector3(0,0,0)); // black bodies not affected by external forces
-    i->body.advance(time);
+  BOOST_FOREACH(ManagedBody &b, bodies_) {
+    b.body.advance(time);
   }
-
   time_ += time;
 }
 
