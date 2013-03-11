@@ -44,7 +44,7 @@ void NBodySimulation::runSimulation()
     recordAndMarkCollisions();
     removeDeadBodies();
     updateAllForces();
-    advance(TIMEINTERVAL);
+    advance(kTimeInterval);
   }
 }
 // removes all simulated bodies and
@@ -118,7 +118,7 @@ void NBodySimulation::addForcesBetween(SimulatedBody &b1, SimulatedBody &b2)
   Gravity::PointMass m1 = { b1.getMass(), b1.getCenter() };
   Gravity::PointMass m2 = { b2.getMass(), b2.getCenter() };
 
-  Vector3 force = Gravity::force(m1, m2, GRAVITY);
+  Vector3 force = Gravity::force(m1, m2, kGravity);
   b1.setForce(b1.getForce() + force);
   b2.setForce(b2.getForce() + force * -1);
 }

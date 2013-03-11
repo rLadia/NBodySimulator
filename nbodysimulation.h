@@ -11,8 +11,8 @@
 #include "gravity.h"
 #include "simulatedbody.h"
 
-static const double TIMEINTERVAL = .01;
-static const int GRAVITY = 10;
+static const double kTimeInterval = .01;
+static const int kGravity = 10;
 
 // Simulates the motion of 3d bodies through space
 class NBodySimulation {
