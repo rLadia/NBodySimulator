@@ -14,12 +14,17 @@
 #include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/timer/timer.hpp>
+#include <boost/thread/thread.hpp>
+
 
 #include "collision.h"
 #include "movingsphere.h"
 #include "nbodysimulator.h"
 #include "polynomial.h"
 #include "tablelogger.h"
+
+#include "display.h"
 
 using std::string;
 
@@ -43,13 +48,36 @@ string numberToString(T);
 
 int main()
 {
-  MovingSphere sphere;
+  Display display(1000,1000);
+  using namespace boost::timer;
+  const nanosecond_type one_second = 1000000000LL;
+
+  typedef Display::Point Point;
+  std::vector<Display::Point> points;
+  points.push_back(Display::Point(500, 500));
+
+  for(int i = 0; i < 10; ++i) {
+    boost::timer::cpu_timer timer;
+    const cpu_times elapsed_times(timer.elapsed());
+    nanosecond_type elapsed = elapsed_times.wall + elapsed_times.system;
+    if(elapsed < one_second) {
+      nanosecond_type time = one_second - elapsed;
+      nanosecond_type milliseconds = time / 1000000;
+
+      points[0]+=Point(15, 15);
+      boost::this_thread::sleep(boost::posix_time::milliseconds(milliseconds));
+    }
+
+    display.Draw(points);
+  }
+  /*
   std::ifstream file(kFileName);
   
   NBodySimulator simulation(kBoundarySize);
 
   std::list<BodyPtr> bodies;
 
+  
   // add the bodies to the simulation
   if(!createBodiesFromFile(&bodies, file)) { 
     std::cerr << "File was not successfully opened.\n";
@@ -69,6 +97,7 @@ int main()
   printCollisionResults(results);
 
   return EXIT_SUCCESS;
+  */
 }
 
 // Prints out each sphere's index, its time of collision, and how it was
