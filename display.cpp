@@ -5,6 +5,7 @@
 void Display::Draw(const std::vector<Point> &points)
 {
   system("cls");
+
   for(int i = 0; i < view_width_; ++i)
     for(int j = 0; j < view_height_; ++j) 
       grid_[i][j] = false;
@@ -16,7 +17,6 @@ void Display::Draw(const std::vector<Point> &points)
   }
 
   for(int i = 0; i < view_height_; ++i) {
-    std::cout << i;
     for(int j = 0; j < view_width_; ++j) {
       if(grid_[j][i])
         std::cout << "X";
@@ -29,7 +29,7 @@ void Display::Draw(const std::vector<Point> &points)
   
 // initialize with height and width
 Display::Display(const int height, const int width)
-  :model_height_(height), model_width_(width), view_width_(75), view_height_(75)
+  :model_height_(height), model_width_(width), view_width_(79), view_height_(79)
 {  
   boost::array<array_type::index, 2> shape = {{ view_width_, view_height_ }};
   grid_.resize(shape);
