@@ -1,6 +1,7 @@
 #include "TableLogger.h"
 #include <boost/foreach.hpp>
 #include <cassert>
+#include <iomanip>
 
 TableLogger::TableLogger(
   const std::string& title, const std::vector<HeaderStyle> &header)
@@ -25,14 +26,14 @@ void TableLogger::LogTableRow(std::vector<std::string> data)
     data.size() == header_.size()));
 
   using std::cout;
-  for(int i = 0; i < data.size(); ++i) {
-    cout << center(data[i], header_[i].first.length());
+  for(std::size_t i = 0; i < data.size(); ++i) {
+    LogJustifiedData(data[i], header_[i]);
     cout << header_space_;
   }
   cout << "\n";
 }
 
-std::string TableLogger::center(const std::string &s, std::string::size_type length) 
+std::string TableLogger::Center(const std::string &s, std::string::size_type length) 
 {
   if(s.length() > length) 
     return s.substr(0, length);
@@ -43,4 +44,19 @@ std::string TableLogger::center(const std::string &s, std::string::size_type len
   for(unsigned int i = 0; i < s.length(); ++i)
     result[i+spaces] = s[i];
   return result;
+}
+
+void TableLogger::LogJustifiedData(const std::string &s, HeaderStyle style)
+{
+  using std::cout;
+  Justification just = style.second;
+  int columnwidth = style.first.length();
+
+  if(just == kCenter)
+    cout << Center(s, columnwidth);
+  else if(just == kRight)
+    cout << std::right << std::setw(columnwidth) << s;
+  else // default to left justify
+    cout << std::left << std::setw(columnwidth) << s;
+
 }

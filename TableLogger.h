@@ -28,10 +28,12 @@ private:
   std::vector<HeaderStyle> header_;
   std::string header_space_;
 
+  void LogJustifiedData(const std::string &, HeaderStyle);
+
   // Returns a new string of length n, containing the given string centered
   // surrounded on either side with an equal number of spaces
   // If the given string does not fit in the given length, it is truncated to fit
-  std::string center(const std::string &s, std::string::size_type length);
+  std::string Center(const std::string &s, std::string::size_type length);
 };
 
 #endif
