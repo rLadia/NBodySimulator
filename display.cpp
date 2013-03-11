@@ -13,7 +13,7 @@ void Display::Draw(const std::vector<Point> &points)
   BOOST_FOREACH(const Point& p, points) {
     int x = static_cast<int>(p.x() / static_cast<double>(model_width_) * view_width_);
     int y = static_cast<int>(p.y() / static_cast<double>(model_height_) * view_height_);
-    if(x >= 0 && x <= view_width_ && y >=0 && y <= view_height_)
+    if(x >= 0 && x < view_width_ && y >=0 && y < view_height_)
       grid_[x][y] = true;
   }
 
