@@ -1,3 +1,6 @@
+#ifndef LADIA_TABLELOGGER_H
+#define LADIA_TABLELOGGER_H
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -27,5 +30,6 @@ private:
   // surrounded on either side with an equal number of spaces
   // If the given string does not fit in the given length, it is truncated to fit
   std::string center(const std::string &s, std::string::size_type length);
-
 };
+
+#endif
