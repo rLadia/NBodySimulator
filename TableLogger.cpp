@@ -1,5 +1,6 @@
 #include "TableLogger.h"
 #include <boost/foreach.hpp>
+#include <cassert>
 
 TableLogger::TableLogger(
   const std::string& title, const std::vector<HeaderStyle> &header)
@@ -20,11 +21,12 @@ void TableLogger::LogTableHead()
 
 void TableLogger::LogTableRow(std::vector<std::string> data)
 {
-  static const unsigned int kIndexHeaderWidth = 5;
+  assert(("Row data does not align with available columns.", 
+    data.size() == header_.size()));
 
   using std::cout;
-  BOOST_FOREACH(const std::string& s, data) {
-    cout << center(s, 8);
+  for(int i = 0; i < data.size(); ++i) {
+    cout << center(data[i], header_[i].first.length());
     cout << header_space_;
   }
   cout << "\n";
