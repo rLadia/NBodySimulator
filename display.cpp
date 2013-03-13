@@ -17,20 +17,26 @@ void Display::Draw(const std::vector<Point> &points)
       grid_[x][y] = true;
   }
 
+  std::string top_border(view_width_ + 2, '_');
+  std::cout << top_border << "\n";
+
   for(int i = 0; i < view_height_; ++i) {
+    std::cout << "|";
     for(int j = 0; j < view_width_; ++j) {
       if(grid_[j][i])
         std::cout << "O";
       else 
         std::cout << " ";
     }
-    std::cout << "\n";
+    std::cout << "|\n";
   }
+
+  std::cout << top_border << std::endl;
 }
   
 // initialize with height and width
 Display::Display(const int height, const int width)
-  :model_height_(height), model_width_(width), view_width_(79), view_height_(79)
+  :model_height_(height), model_width_(width), view_width_(70), view_height_(70)
 {  
   boost::array<array_type::index, 2> shape = {{ view_width_, view_height_ }};
   grid_.resize(shape);
