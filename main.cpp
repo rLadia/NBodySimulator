@@ -100,7 +100,7 @@ int main()
       nanosecond_type milliseconds = time / 1000000;
 
       // pause for the rest of the second
-      //boost::this_thread::sleep(boost::posix_time::milliseconds(milliseconds/5));
+      boost::this_thread::sleep(boost::posix_time::milliseconds(milliseconds/5));
       timer = boost::timer::cpu_timer();
     } 
     simulation.RunSimulation(0.01);
