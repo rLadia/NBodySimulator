@@ -5,7 +5,7 @@ Sphere::Sphere()
   :center_(0, 0, 0), radius_(1)
 {}
 
-//if radius is < 1, it default to 1
+//if radius is < 1, it defaults to 1
 Sphere::Sphere(Vector3 center, int radius)
   : center_(center), radius_ ((radius > 0) ? radius : 1)
 {}
