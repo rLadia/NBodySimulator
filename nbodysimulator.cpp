@@ -3,52 +3,64 @@
 
 typedef SimulatedBody* BodyPtr;
 
-NBodySimulator::NBodySimulator(int boundary) 
-  : boundary_(boundary)
+NBodySimulator::NBodySimulator(const double time_interval) 
+  : time_interval_(time_interval)
 {}
 
-// adds a body to be simulated
-void NBodySimulator::SetBodyList(const std::list<BodyPtr> &bodies)
-{
-  bodies_ = bodies;
-}
+NBodySimulator::NBodySimulator(const double time_interval) 
+  : time_interval_(kDefaultTimeInterval)
+{}
 
 //*TODO* add check for stable orbits
-void NBodySimulator::RunSimulation(const double timeinterval)
+void NBodySimulator::Simulate(BodyList* bodies, const double time_simulated)
 {
-  updateAllForces();
+  double elapsed;
+  for(elapsed = 0; 
+    elapsed <= time_simulated - time_interval_; 
+    elapsed += time_interval_) {
 
-  BOOST_FOREACH(BodyPtr b, bodies_) {
-    b->advance(timeinterval);
+    updateAllForces(*bodies);
+
+    BOOST_FOREACH(BodyPtr b, bodies) {
+      b->advance(time_interval_);
+    }
+  }
+
+  if(time_simulated >= 0) {
+    updateAllForces(*bodies);
+
+    BOOST_FOREACH(BodyPtr b, bodies) {
+      b->advance(elapsed - time_interval_); // simulate the remaining time
+    }
   }
 }
 
 // Updates the instantaneous force exerted on all of the simulated bodies
-void NBodySimulator::updateAllForces()
+void NBodySimulator::updateAllForces(BodyList &bodies)
 {
-  resetForces(); //start from 0
-  calculateForcesBetweenBodies();
+  resetForces(bodies); //start from 0
+  calculateForcesBetweenBodies(bodies);
 }
 
 // set the forces of each simulated body to 0
-void NBodySimulator::resetForces() 
+void NBodySimulator::resetForces(BodyList &bodies) 
 {
-  for(BodyList::iterator i = bodies_.begin(); i != bodies_.end(); ++i)
+  for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
     (*i)->setForce(Vector3(0,0,0));
 }
 
 
 // Calculates the instantaneous forces exerted on the simulated bodies
 // by each other simulated body
-void NBodySimulator::calculateForcesBetweenBodies() 
+void NBodySimulator::calculateForcesBetweenBodies(BodyList &bodies) 
 {
-  BodyList::iterator i = bodies_.begin();
+  BodyList::iterator i = bodies.begin();
 
-  for(i; i != bodies_.end(); ++i) {
+  for(i; i != bodies.end(); ++i) {
     BodyList::iterator j = i; //not necessary to start at beginning
 
     // bodies do not apply a force on themselves
-    for(j++; j != bodies_.end(); ++j) {
+    for(j++; j != bodies.end(); ++j) {
       addForcesBetween(**i, **j);
     }
   };
