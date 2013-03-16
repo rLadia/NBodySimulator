@@ -38,11 +38,11 @@ string numberToString(T);
 
 void NBodySimulatorTestSuite::Test() 
 {
-Display display(1000,1000);
+  Display display(1000,1000);
   
   std::ifstream file(kFileName);
   
-  NBodySimulator simulation(kBoundarySize);
+  NBodySimulator simulation;
 
   NBodySimulator::BodyList bodies;
 
@@ -55,8 +55,6 @@ Display display(1000,1000);
   }
   file.close();
 
-  simulation.SetBodyList(bodies);
-
   for(int i = 0; i < 50000; ++i) {
     
     if(i % 250 == 0) { // once a second
@@ -68,7 +66,7 @@ Display display(1000,1000);
       }
       display.Draw(points);
     } 
-    simulation.RunSimulation(0.01);
+    simulation.Simulate(&bodies, 0.01);
   }
 }
 
