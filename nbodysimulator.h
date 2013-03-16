@@ -11,14 +11,16 @@
 #include "gravity.h"
 #include "simulatedbody.h"
 
-static const double kDefaultTimeInterval = 0.01;
-static const int kGravity = 10;
+
 
 // Simulates the motion of 3d bodies through space
 class NBodySimulator {
 public:
   typedef SimulatedBody* Body;
   typedef std::list<Body> BodyList;
+
+  static const double kDefaultTimeInterval;
+  static const int kGravity = 10;
 
   // Simulates the effects of gravity on the given list of spheres over the 
   // given time period.
