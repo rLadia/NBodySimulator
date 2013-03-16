@@ -15,7 +15,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "nbodysimulator.h"
+#include "../nbodysimulator.h"
 #include "tablelogger.h"
 
 #include "display.h"

@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <boost/multi_array.hpp>
-#include "nvector.h"
+#include "../nvector.h"
 
 class Display 
 {
