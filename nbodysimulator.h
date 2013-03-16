@@ -17,7 +17,7 @@
 class NBodySimulator {
 public:
   typedef SimulatedBody* Body;
-  typedef std::list<Body> BodyList;
+  typedef std::vector<Body> BodyList;
 
   static const double kDefaultTimeInterval;
   static const int kGravity = 10;
