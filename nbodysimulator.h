@@ -6,8 +6,6 @@
 #include <list>
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
-
 #include "color.h"
 #include "collision.h"
 #include "gravity.h"
@@ -19,7 +17,7 @@ static const int kGravity = 10;
 // Simulates the motion of 3d bodies through space
 class NBodySimulator {
 public:
-  typedef boost::shared_ptr<SimulatedBody> Body;
+  typedef SimulatedBody* Body;
   typedef std::list<Body> BodyList;
 
   void SetBodyList(const BodyList &);

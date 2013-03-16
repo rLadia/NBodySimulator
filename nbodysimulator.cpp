@@ -1,7 +1,7 @@
 #include "nbodysimulator.h"
-#include <boost/foreach.hpp>
+#include "foreach.hpp"
 
-typedef boost::shared_ptr<SimulatedBody> BodyPtr;
+typedef SimulatedBody* BodyPtr;
 
 NBodySimulator::NBodySimulator(int boundary) 
   : boundary_(boundary)
@@ -14,13 +14,11 @@ void NBodySimulator::SetBodyList(const std::list<BodyPtr> &bodies)
 }
 
 //*TODO* add check for stable orbits
-// run until all spheres have collided
 void NBodySimulator::RunSimulation(const double timeinterval)
 {
   updateAllForces();
 
-  typedef boost::shared_ptr<SimulatedBody> Body;
-  BOOST_FOREACH(Body b, bodies_) {
+  BOOST_FOREACH(BodyPtr b, bodies_) {
     b->advance(timeinterval);
   }
 }
