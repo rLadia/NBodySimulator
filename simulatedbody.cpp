@@ -27,7 +27,7 @@ void SimulatedBody::advance(const double time) {
   center_ += velocity_ * time;
 
   // this may not be necessary
-  center_ += acceleration * 0.5 * time * time; // 1/2 * a * t^2
+  //center_ += acceleration * 0.5 * time * time; // 1/2 * a * t^2
 
   velocity_ += acceleration * time; // v(t) = v(0) + at
 }

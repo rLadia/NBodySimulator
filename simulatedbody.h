@@ -10,9 +10,9 @@ class SimulatedBody
   : public MovingSphere // implemented using a sphere approximation
 {
 public:
-  // advances position based on current velocity, acceleration and force
+  // advances position based on current velocity
+  // updates velocity based on current acceleration
   // using the kinematic forumlas: 
-  //  x(t) = x(0) + v(0) * t + 1/2 * a * t^2
   //  v(t) = v(0) + a * t
   void advance(double);
 
