@@ -1,5 +1,6 @@
 #include "nbodysimulator.h"
-#include "foreach.hpp"
+
+const double NBodySimulator::kDefaultTimeInterval = 0.01;
 
 typedef SimulatedBody* BodyPtr;
 
@@ -7,11 +8,10 @@ NBodySimulator::NBodySimulator(const double time_interval)
   : time_interval_(time_interval)
 {}
 
-NBodySimulator::NBodySimulator(const double time_interval) 
+NBodySimulator::NBodySimulator() 
   : time_interval_(kDefaultTimeInterval)
 {}
 
-//*TODO* add check for stable orbits
 void NBodySimulator::Simulate(BodyList* bodies, const double time_simulated)
 {
   double elapsed;
@@ -21,17 +21,16 @@ void NBodySimulator::Simulate(BodyList* bodies, const double time_simulated)
 
     updateAllForces(*bodies);
 
-    BOOST_FOREACH(BodyPtr b, bodies) {
-      b->advance(time_interval_);
-    }
+    for(BodyList::iterator i = bodies->begin(); i != bodies->end(); ++i)
+      (*i)->advance(time_interval_);
   }
 
-  if(time_simulated >= 0) {
+  // simulates any time remaining
+  if(elapsed > time_simulated && time_simulated >= 0) {
     updateAllForces(*bodies);
 
-    BOOST_FOREACH(BodyPtr b, bodies) {
-      b->advance(elapsed - time_interval_); // simulate the remaining time
-    }
+    for(BodyList::iterator i = bodies->begin(); i != bodies->end(); ++i)
+      (*i)->advance(elapsed - time_interval_);
   }
 }
 
