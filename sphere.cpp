@@ -22,9 +22,9 @@ double Sphere::calculateVolume() const
  	return 4.0 / 3.0 * M_PI * pow(radius_, 3);   
 }
 //setters
-void Sphere::setCenter(Vector3 podouble)
+void Sphere::setCenter(Vector3 center)
 {
-	center_ = podouble;
+	center_ = center;
 }
 
 //if the radius is < 1, it is not changed
