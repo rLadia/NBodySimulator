@@ -36,7 +36,7 @@ void Display::Draw(const std::vector<Point> &points)
   
 // initialize with height and width
 Display::Display(const int height, const int width)
-  :model_height_(height), model_width_(width), view_width_(70), view_height_(70)
+  :model_height_(height), model_width_(width), view_width_(49), view_height_(49)
 {  
   boost::array<array_type::index, 2> shape = {{ view_width_, view_height_ }};
   grid_.resize(shape);
