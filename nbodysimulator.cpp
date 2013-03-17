@@ -1,3 +1,7 @@
+#include <cassert>
+
+#include "collision.h"
+#include "gravity.h"
 #include "nbodysimulator.h"
 
 const double NBodySimulator::kDefaultTimeInterval = 0.01;

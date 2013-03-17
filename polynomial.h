@@ -2,8 +2,6 @@
 #define LADIA_CSS342_POLYNOMIAL_H
 
 #include <vector>
-#include <cmath>
-#include <cassert>
 
 // Namespace containing functions used in polynomial equations
 namespace POLYNOMIAL {
@@ -26,6 +24,9 @@ namespace POLYNOMIAL {
   template<typename T>
   vector<T> square(T, T);
 }
+
+#include <cmath>
+#include <cassert>
 
 // returns the solutions of a second degree polynomial
 // The size of returned array will equal the number of real solutions

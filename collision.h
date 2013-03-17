@@ -1,7 +1,6 @@
 #ifndef LADIA_CSS342_COLLISION_H
 #define LADIA_CSS342_COLLISION_H
 
-#include <vector>
 #include "movingsphere.h"
 #include "polynomial.h"
 

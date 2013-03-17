@@ -1,10 +1,6 @@
 #ifndef LADIA_CSS342_SPHERE_H
 #define LADIA_CSS342_SPHERE_H
 
-// needed for pow function and M_PI
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 #include "nvector.h"
 
 class Sphere {

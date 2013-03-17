@@ -1,4 +1,5 @@
 #include "collision.h"
+#include "polynomial.h"
 
 //if the sum of the radius is <= the distance, the spheres collide
 bool COLLISION::isOverlapping(const Sphere& left, const Sphere& right){

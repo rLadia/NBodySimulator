@@ -1,3 +1,4 @@
+#include <cmath>
 #include "gravity.h"
 
 // returns the gravitational force between two point masses

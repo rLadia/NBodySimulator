@@ -1,7 +1,6 @@
 #ifndef LADIA_CSS342_GRAVITY_H
 #define LADIA_CSS342_GRAVITY_H
 
-#include <cmath>
 #include "nvector.h"
 
 // Namespace containing functions for calculating the gravitational force 

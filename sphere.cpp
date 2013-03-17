@@ -1,3 +1,7 @@
+// needed for pow function and M_PI
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "sphere.h"
 
 //radius defaults to 1

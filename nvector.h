@@ -1,9 +1,6 @@
 #ifndef LADIA_CSS342_NVECTOR_H
 #define LADIA_CSS342_NVECTOR_H
 
-#include <cassert>
-#include <cstddef>
-
 // Represents an n-dimensional Vector
 template<typename T, int D> //type, dimensions
 class NVector
@@ -49,6 +46,8 @@ class NVector
   const NVector<T, D> operator + (const NVector<T, D> &) const;
   const NVector<T, D> operator - (const NVector<T, D> &) const;
 };
+
+#include <cassert>
 
 typedef NVector<double, 3> Vector3;
 

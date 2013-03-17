@@ -1,17 +1,8 @@
 #ifndef LADIA_CSS342_NBODYSIMULATOR_H
 #define LADIA_CSS342_NBODYSIMULATOR_H
 
-#include <algorithm>
-#include <cassert>
-#include <list>
 #include <vector>
-
-#include "color.h"
-#include "collision.h"
-#include "gravity.h"
 #include "simulatedbody.h"
-
-
 
 // Simulates the motion of 3d bodies through space
 class NBodySimulator {
