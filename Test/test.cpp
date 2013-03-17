@@ -26,8 +26,6 @@ using std::string;
 typedef NBodySimulator::Body Body;
 typedef NBodySimulator::BodyList BodyList;
 
-
-
 // uses the information from the file to add bodies to the list of bodies
 // returns false if there was an error opening the file
 bool createBodiesFromFile(BodyList &, std::ifstream &);
@@ -35,6 +33,8 @@ bool createBodiesFromFile(BodyList &, std::ifstream &);
 //uses string stream to convert a number to a string
 template<typename T>
 string numberToString(T);
+
+void PrintPosition(BodyList &, double);
 
 void NBodySimulatorTestSuite::Test() 
 {
@@ -55,6 +55,14 @@ void NBodySimulatorTestSuite::Test()
   }
   file.close();
 
+  PrintPosition(bodies, 0);
+  
+  double time = 7.6;
+  simulation.Simulate(&bodies, time);
+
+  std::cout << "\n";
+  PrintPosition(bodies, time);
+  /*
   for(int i = 0; i < 50000; ++i) {
     
     if(i % 250 == 0) { // once a second
@@ -68,6 +76,33 @@ void NBodySimulatorTestSuite::Test()
     } 
     simulation.Simulate(&bodies, 0.01);
   }
+  */
+}
+
+void PrintPosition(BodyList &bodies, double elapsed)
+{
+  std::vector<TableLogger::HeaderStyle> header;
+  header.push_back(std::make_pair("Index", TableLogger::kCenter));
+  header.push_back(std::make_pair("X-Position", TableLogger::kCenter));
+  header.push_back(std::make_pair("Y-Position", TableLogger::kCenter));
+
+  std::string title = "Position at " + numberToString<double>(elapsed) + " seconds"; 
+
+  TableLogger table(title, header);
+
+  table.LogTableHead();
+
+  int index = 0;
+  for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i) {
+ 
+    std::vector<std::string> row; 
+    row.push_back(numberToString<int>(index));
+    row.push_back(numberToString<double>((*i)->getCenter().x()));
+    row.push_back(numberToString<double>((*i)->getCenter().y()));
+    index ++;
+    table.LogTableRow(row);
+  }
+
 }
 
 // uses the information from the file to add bodies to the simulation
@@ -89,7 +124,7 @@ bool createBodiesFromFile(BodyList &bodies, std::ifstream &file)
       r, 
       Vector3(vx, vy, vz), 
       Vector3(0,0,0),
-      r*50));
+      r));
     bodies.push_back(body);
   } while(file.good());
   
