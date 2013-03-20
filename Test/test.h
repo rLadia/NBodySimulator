@@ -1,11 +1,13 @@
 #ifndef LADIA_NBODYSIMULATOR_TEST_H
 #define LADIA_NBODYSIMULATOR_TEST_H
 
-static const char* kFileName = "sphere.txt"; // test file
-static const int kBoundarySize = 1000; // default boundary size
+#include "../nbodysimulator.h"
 
-namespace NBodySimulatorTestSuite {
-  void Test();
+namespace NBodySimulatorTestSuite 
+{
+  void TestFile();
+  void TestDraw();
+  void TestData();
 };
 
 #endif

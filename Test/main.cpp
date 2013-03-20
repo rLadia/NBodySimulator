@@ -1,16 +1,9 @@
-
-#define TEST
-
-#ifdef TEST
 #include "test.h"
-#endif
 
 int main() 
 {
-
-#ifdef TEST
-NBodySimulatorTestSuite::Test();
-#endif
-
+  NBodySimulatorTestSuite::TestData();
+  //NBodySimulatorTestSuite::TestFile();
+  //NBodySimulatorTestSuite::TestDraw();
   return 0;
 }
