@@ -1,10 +1,13 @@
+/* converts the model coordinates into console screen coordinates
+ * and draws a character on the console
+*/
 #include "display.h"
 #include <iostream>
 #include <boost/foreach.hpp>
 
 void Display::Draw(const std::vector<Point> &points)
 {
-  system("cls");
+  system("cls"); // *TODO* replace with portable method
 
   for(int i = 0; i < view_width_; ++i)
     for(int j = 0; j < view_height_; ++j) 

@@ -12,7 +12,7 @@ typedef NBodySimulator::BodyList BodyList;
 void initBodies(BodyList &bodies) 
 {
   NBodySimulator::Body body1(new SimulatedBody(
-    Vector3(10.048661622381710, 0, 0), 
+    Vector3(10, 0, 0), 
     1, 
     Vector3(0, 0, 0), 
     Vector3(0, 0, 0),
@@ -20,7 +20,7 @@ void initBodies(BodyList &bodies)
   );
 
   NBodySimulator::Body body2(new SimulatedBody(
-    Vector3(19.951338377618, 0, 0), 
+    Vector3(20, 0, 0), 
     1, 
     Vector3(0, 0, 0), 
     Vector3(0, 0, 0),

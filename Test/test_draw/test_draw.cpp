@@ -20,6 +20,7 @@ void draw(BodyList& bodies)
   typedef Display::Point Point;
   std::vector<Display::Point> points;
    
+  // runs for 50 seconds
   for(int i = 0; i < 50000; ++i) {
     
     if(i % 250 == 0) { // once a second
@@ -37,6 +38,7 @@ void draw(BodyList& bodies)
 
 void NBodySimulatorTestSuite::TestDraw() 
 {  
+  // reads the initial state
   NBodySimulator::BodyList bodies;
   std::ifstream file(NBodySimulatorTestSuite::kFileName);
 
@@ -44,6 +46,7 @@ void NBodySimulatorTestSuite::TestDraw()
   NBodySimulatorUtil::createBodiesFromFile(bodies, file);
   file.close();
 
+  // begins the animation
   draw(bodies);
 }
 
