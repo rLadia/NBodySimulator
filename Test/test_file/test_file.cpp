@@ -12,11 +12,9 @@ typedef NBodySimulator::BodyList BodyList;
 
 void NBodySimulatorTestSuite::TestFile() 
 {
-  const char* kFileName = "sphere.txt";
-
   NBodySimulator simulation;
   NBodySimulator::BodyList bodies;
-  std::ifstream file(kFileName);
+  std::ifstream file(NBodySimulatorTestSuite::kFileName);
 
   // add the bodies to the simulation
   NBodySimulatorUtil::createBodiesFromFile(bodies, file);

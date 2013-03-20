@@ -37,10 +37,8 @@ void draw(BodyList& bodies)
 
 void NBodySimulatorTestSuite::TestDraw() 
 {  
-  const char* kFileName = "sphere.txt";
-
   NBodySimulator::BodyList bodies;
-  std::ifstream file(kFileName);
+  std::ifstream file(NBodySimulatorTestSuite::kFileName);
 
   // add the bodies to the simulation
   NBodySimulatorUtil::createBodiesFromFile(bodies, file);
