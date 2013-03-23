@@ -14,6 +14,12 @@ public:
   // position, velocity, force, mass, radius
   ModelObject(Vector3D, Vector3D, Vector3D, double, double);
 
+  // Modifies the position and velocity using the kinematic equations of motion
+  // and the given time interval
+  // x(t) = 1/2 a * t^2
+  // v(t) = v(0) + a * t
+  void Advance(double);
+
   // getters
   const Vector3D Position() const;
   const Vector3D Velocity() const;
