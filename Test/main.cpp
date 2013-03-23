@@ -4,6 +4,6 @@ int main()
 {
   NBodySimulatorTestSuite::TestData();
   NBodySimulatorTestSuite::TestFile();
-  NBodySimulatorTestSuite::TestDraw();
+  //NBodySimulatorTestSuite::TestDraw();
   return 0;
 }
