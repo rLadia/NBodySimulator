@@ -22,10 +22,10 @@ public:
   const double   Radius() const;
 
   // setters
-  Vector3D SetPosition(Vector3D) const;
-  Vector3D SetVelocity(Vector3D) const;
-  Vector3D SetForce(Vector3D) const;
-  double   SetMass(double) const;
+  void SetPosition(Vector3D) const;
+  void SetVelocity(Vector3D) const;
+  void SetForce(Vector3D) const;
+  void SetMass(double) const;
   
 protected:
   Vector3D position_;
