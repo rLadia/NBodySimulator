@@ -15,17 +15,17 @@ public:
   ModelObject(Vector3D, Vector3D, Vector3D, double, double);
 
   // getters
-  const Vector3D getPosition() const;
-  const Vector3D getVelocity() const;
-  const Vector3D getForce() const;
-  const double   getMass() const;
-  const double   getRadius() const;
+  const Vector3D Position() const;
+  const Vector3D Velocity() const;
+  const Vector3D Force() const;
+  const double   Mass() const;
+  const double   Radius() const;
 
   // setters
-  Vector3D setPosition(Vector3D) const;
-  Vector3D setVelocity(Vector3D) const;
-  Vector3D setForce(Vector3D) const;
-  double   setMass(double) const;
+  Vector3D SetPosition(Vector3D) const;
+  Vector3D SetVelocity(Vector3D) const;
+  Vector3D SetForce(Vector3D) const;
+  double   SetMass(double) const;
   
 protected:
   Vector3D position_;
