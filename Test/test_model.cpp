@@ -3,7 +3,7 @@
 #include "util.h"
 #include "test.h"
 
-const double elapsed = 7.0;
+const double elapsed = 7.7;
 
 void NBodySimulatorTestSuite::TestModel() 
 {
