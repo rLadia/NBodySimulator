@@ -9,6 +9,10 @@ namespace NBodySimulatorTestSuite
 
   // Reads initial conditions from a file and runs the simulation for a preset 
   // period of time. The initial and final conditions are logged.
+  void TestModel();
+
+  // Reads initial conditions from a file and runs the simulation for a preset 
+  // period of time. The initial and final conditions are logged.
   void TestFile();
 
   // Runs the simulation for a preset period of time using hard-coded initial

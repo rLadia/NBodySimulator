@@ -2,8 +2,9 @@
 
 int main() 
 {
+  NBodySimulatorTestSuite::TestModel();
   NBodySimulatorTestSuite::TestData();
-  NBodySimulatorTestSuite::TestFile();
+  //NBodySimulatorTestSuite::TestFile();
   //NBodySimulatorTestSuite::TestDraw();
   return 0;
 }
