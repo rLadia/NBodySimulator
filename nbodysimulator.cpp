@@ -21,7 +21,7 @@ void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated)
     elapsed <= time_simulated - time_interval_; 
     elapsed += time_interval_) {
 
-    updateAllForces(bodies);
+    UpdateAllForces(bodies);
 
     for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
       i->Advance(time_interval_);
@@ -29,7 +29,7 @@ void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated)
 
   // simulates any time remaining
   if(elapsed > time_simulated && time_simulated >= 0) {
-    updateAllForces(bodies);
+    UpdateAllForces(bodies);
 
     for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
       i->Advance(elapsed - time_interval_);
@@ -37,14 +37,14 @@ void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated)
 }
 
 // Updates the instantaneous force exerted on all of the simulated bodies
-void NBodySimulator::updateAllForces(BodyList &bodies)
+void NBodySimulator::UpdateAllForces(BodyList &bodies)
 {
-  resetForces(bodies); //start from 0
-  calculateForcesBetweenBodies(bodies);
+  ResetForces(bodies); //start from 0
+  CalculateForcesBetweenBodies(bodies);
 }
 
 // set the forces of each simulated body to 0
-void NBodySimulator::resetForces(BodyList &bodies) 
+void NBodySimulator::ResetForces(BodyList &bodies) 
 {
   for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
     i->set_force(Vector3(0,0,0));
@@ -53,23 +53,22 @@ void NBodySimulator::resetForces(BodyList &bodies)
 
 // Calculates the instantaneous forces exerted on the simulated bodies
 // by each other simulated body
-void NBodySimulator::calculateForcesBetweenBodies(BodyList &bodies) 
+void NBodySimulator::CalculateForcesBetweenBodies(BodyList &bodies) 
 {
   BodyList::iterator i = bodies.begin();
 
   for(i; i != bodies.end(); ++i) {
-    BodyList::iterator j = i; //not necessary to start at beginning
-
-    // bodies do not apply a force on themselves
-    for(j++; j != bodies.end(); ++j) {
-      addForcesBetween(*i, *j);
+    BodyList::iterator j = i; // not necessary to start at beginning
+    j ++; // bodies do not apply a force on themselves
+    for(; j != bodies.end(); ++j) {
+      AddForcesBetween(*i, *j);
     }
   };
 }
 
 
 // Adds the force exerted on each body to each body's net force 
-void NBodySimulator::addForcesBetween(ModelObject &b1, ModelObject &b2)
+void NBodySimulator::AddForcesBetween(ModelObject &b1, ModelObject &b2)
 {
   Gravity::PointMass m1 = { b1.mass(), b1.position() };
   Gravity::PointMass m2 = { b2.mass(), b2.position() };

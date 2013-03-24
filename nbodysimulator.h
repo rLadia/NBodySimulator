@@ -19,7 +19,7 @@ public:
 
   // Calculates the instantaneous forces exerted on each body by every other
   // body and adds that force to the body's force member
-  void calculateForcesBetweenBodies(BodyList &);
+  void CalculateForcesBetweenBodies(BodyList &);
 
   // time interval used to update forces
   NBodySimulator(const double);
@@ -29,15 +29,15 @@ private:
   double time_interval_;
   
   // Sets the net force of each simulated body to 0
-  void resetForces(BodyList &);
+  void ResetForces(BodyList &);
 
   // Updates the net instantaneous force exerted on each simulated body
   // There are gravitational forces acting between each body and from
   // black holes. The black spheres are not affected by gravity.
-  void updateAllForces(BodyList &);
+  void UpdateAllForces(BodyList &);
 
   // Adds the gravitational force between each body to each body's net force
-  void addForcesBetween(ModelObject &, ModelObject &);
+  void AddForcesBetween(ModelObject &, ModelObject &);
 };
 
 #endif
