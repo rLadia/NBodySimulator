@@ -21,6 +21,12 @@ namespace Shape
     Vector2D center;
     double length;
   };
+
+  struct Sphere
+  {
+    Vector3D center;
+    double radius;
+  };
 }
 
 #endif
