@@ -11,7 +11,7 @@ public:
   typedef std::vector<Body> BodyList;
 
   static const double kDefaultTimeInterval;
-  static const int kGravity = 10;
+  static const double kDefaultGravity;
 
   // Simulates the effects of gravity on the given list of spheres over the 
   // given time period
@@ -21,13 +21,13 @@ public:
   // body and adds that force to the body's force member
   void CalculateForcesBetweenBodies(BodyList &);
 
-  // time interval used to update forces
-  NBodySimulator(const double);
+  // time interval used to update forces, gravitational constant used
+  NBodySimulator(const double, const double);
   NBodySimulator();
 
 private:
   double time_interval_;
-  
+  double gravity_;
   // Sets the net force of each simulated body to 0
   void ResetForces(BodyList &);
 

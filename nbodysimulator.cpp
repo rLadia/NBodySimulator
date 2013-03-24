@@ -5,13 +5,14 @@
 #include "nbodysimulator.h"
 
 const double NBodySimulator::kDefaultTimeInterval = 0.01;
+const double NBodySimulator::kDefaultGravity = 10.0;
 
-NBodySimulator::NBodySimulator(const double time_interval) 
-  : time_interval_(time_interval)
+NBodySimulator::NBodySimulator(const double time_interval, const double gravity) 
+  : time_interval_(time_interval), gravity_(gravity)
 {}
 
 NBodySimulator::NBodySimulator() 
-  : time_interval_(kDefaultTimeInterval)
+  : time_interval_(kDefaultTimeInterval), gravity_(kDefaultGravity)
 {}
 
 void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated)
@@ -73,7 +74,7 @@ void NBodySimulator::AddForcesBetween(ModelObject &b1, ModelObject &b2)
   Gravity::PointMass m1 = { b1.mass(), b1.position() };
   Gravity::PointMass m2 = { b2.mass(), b2.position() };
 
-  Vector3 force = Gravity::force(m1, m2, kGravity);
+  Vector3 force = Gravity::force(m1, m2, gravity_);
   b1.set_force(b1.force() + force);
   b2.set_force(b2.force() + force * -1);
 }
