@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 
-#include "../util.h"
-#include "../display.h"
-#include "../test.h"
+#include "util.h"
+#include "display.h"
+#include "test.h"
 
 using std::string;
 

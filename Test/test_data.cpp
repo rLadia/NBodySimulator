@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "../util.h"
-#include "../test.h"
+#include "util.h"
+#include "test.h"
 
 const double elapsed = 1.0;
 
