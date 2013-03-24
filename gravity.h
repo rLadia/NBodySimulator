@@ -14,11 +14,11 @@ namespace Gravity {
   };
 
   // returns the gravitational force between two point masses
-  NVector<double, 3> force(PointMass, PointMass);
+  Vector3D force(PointMass, PointMass);
 
   // returns the gravitational force between two point masses
   // using a custom value for the gravitational constant
-  NVector<double, 3> force(PointMass, PointMass, const double); 
+  Vector3D force(PointMass, PointMass, const double);
 }
 
 #endif
