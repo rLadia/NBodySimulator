@@ -14,8 +14,12 @@ public:
   static const int kGravity = 10;
 
   // Simulates the effects of gravity on the given list of spheres over the 
-  // given time period.
+  // given time period
   void Simulate(BodyList &, const double);
+
+  // Calculates the instantaneous forces exerted on each body by every other
+  // body and adds that force to the body's force member
+  void calculateForcesBetweenBodies(BodyList &);
 
   // time interval used to update forces
   NBodySimulator(const double);
@@ -31,9 +35,6 @@ private:
   // There are gravitational forces acting between each body and from
   // black holes. The black spheres are not affected by gravity.
   void updateAllForces(BodyList &);
-
-  // Calculates the instantaneous forces exerted between each simulated body
-  void calculateForcesBetweenBodies(BodyList &);
 
   // Adds the gravitational force between each body to each body's net force
   void addForcesBetween(ModelObject &, ModelObject &);
