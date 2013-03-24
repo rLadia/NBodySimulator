@@ -26,8 +26,8 @@ void NBodySimulatorTestSuite::TestFile()
   
   // run the simulation for 2 seconds
   double time = 2;
-  simulation.Simulate(&bodies, 1);
-  simulation.Simulate(&bodies, 1);
+  simulation.Simulate(bodies, 1);
+  simulation.Simulate(bodies, 1);
 
   // logs final state
   std::cout << "\n--- Simulation Complete ---\n";
