@@ -105,9 +105,9 @@ double NVector<T, D>::Distance(const NVector<T, D>& left, const NVector<T, D>& r
 {
   double sum = 0;
   for(int i = 0; i < D; ++i) {
-    T a1 = left.val_[i];
-    T a2 = right.val_[i];
-    sum += (a2 - a1);
+    T a = left.val_[i];
+    T b = right.val_[i];
+    sum += a * a - 2 * a * b + b * b; // (a-b)^2 = a^2 - 2ab + b^2
   }
   return std::sqrt(sum);
 }
