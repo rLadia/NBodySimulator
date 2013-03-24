@@ -1,4 +1,4 @@
-#include "collision.h"
+#include "overlap.h"
 #include <cmath>
 
 //if the sum of the radius is <= the distance, the spheres collide
