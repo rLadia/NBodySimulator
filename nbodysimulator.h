@@ -9,13 +9,16 @@ class NBodySimulator {
 public:
   typedef ModelObject Body;
   typedef std::vector<Body> BodyList;
+  typedef void (*EventCallBack)(BodyList&);
 
   static const double kDefaultTimeInterval;
   static const double kDefaultGravity;
 
-  // Simulates the effects of gravity on the given list of spheres over the 
-  // given time period
+  // Simulates the effects of gravity on the given list of objects over the 
+  // given time period. 
   void Simulate(BodyList &, const double);
+
+  void Simulate(BodyList &, const double, EventCallBack);
 
   // Calculates the instantaneous forces exerted on each body by every other
   // body and adds that force to the body's force member

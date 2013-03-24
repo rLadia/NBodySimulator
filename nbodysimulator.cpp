@@ -16,6 +16,8 @@ NBodySimulator::NBodySimulator()
 
 void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated)
 {
+  Simulate(bodies, time_simulated, NULL);
+  /*
   double elapsed;
   for(elapsed = 0; 
     elapsed <= time_simulated - time_interval_; 
@@ -34,7 +36,39 @@ void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated)
     for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
       i->Advance(elapsed - time_interval_);
   }
+  */
 }
+
+void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated, EventCallBack event_call_back)
+{
+  double elapsed;
+  if(event_call_back != NULL)
+    event_call_back(bodies);
+
+  for(elapsed = 0; 
+    elapsed <= time_simulated - time_interval_; 
+    elapsed += time_interval_) {
+
+    UpdateAllForces(bodies);
+
+    for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
+      i->Advance(time_interval_);
+    if(event_call_back != NULL)
+      event_call_back(bodies);
+  }
+
+  // simulates any time remaining
+  if(elapsed > time_simulated && time_simulated >= 0) {
+    UpdateAllForces(bodies);
+
+    for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
+      i->Advance(elapsed - time_interval_);
+
+    if(event_call_back != NULL)
+      event_call_back(bodies);
+  }
+}
+
 
 // Updates the instantaneous force exerted on all of the simulated bodies
 void NBodySimulator::UpdateAllForces(BodyList &bodies)
