@@ -12,7 +12,7 @@ with each other.
 
 #include <vector>
 #include <list>
-#include "ModelObject.h"
+#include "modelobject.h"
 
 #ifndef LADIA_NBODYSIMULATOR_MODEL_H
 #define LADIA_NBODYSIMULATOR_MODEL_H
