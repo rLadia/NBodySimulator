@@ -4,6 +4,31 @@
 #include <boost/lexical_cast.hpp>
 #include "TableLogger.h"
 
+// initializes the body data
+void NBodySimulatorUtil::InitBodies(BodyList &bodies) 
+{
+  typedef NBodySimulator::Body Body;
+
+  Body body1(
+    Vector3(10, 0, 0), // position
+    Vector3(0, 0, 0),  // velocity
+    Vector3(0, 0, 0),  // force
+    1, // mass
+    1  // radius
+  );
+
+  Body body2(
+    Vector3(20, 0, 0), 
+    Vector3(0, 0, 0), 
+    Vector3(0, 0, 0),
+    1, 
+    1
+  );
+
+  bodies.push_back(body1);
+  bodies.push_back(body2);
+}
+
 // uses the information from the file to add bodies to the simulation
 bool NBodySimulatorUtil::createBodiesFromFile(BodyList &bodies, std::ifstream &file)
 {

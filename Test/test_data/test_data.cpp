@@ -8,35 +8,12 @@ const double elapsed = 1.0;
 typedef NBodySimulator::Body     Body;
 typedef NBodySimulator::BodyList BodyList;
 
-// initializes the body data
-void initBodies(BodyList &bodies) 
-{
-  Body body1(
-    Vector3(10, 0, 0), // position
-    Vector3(0, 0, 0),  // velocity
-    Vector3(0, 0, 0),  // force
-    1, // mass
-    1  // radius
-  );
-
-  Body body2(
-    Vector3(20, 0, 0), 
-    Vector3(0, 0, 0), 
-    Vector3(0, 0, 0),
-    1, 
-    1
-  );
-
-  bodies.push_back(body1);
-  bodies.push_back(body2);
-}
-
 void NBodySimulatorTestSuite::TestData() 
 {
   NBodySimulator simulation;
   NBodySimulator::BodyList bodies;
 
-  initBodies(bodies);
+  NBodySimulatorUtil::InitBodies(bodies);
 
   std::cout << "\n--- Program Start ---\n";
   NBodySimulatorUtil::PrintPosition(bodies, 0);
