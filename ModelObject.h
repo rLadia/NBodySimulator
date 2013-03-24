@@ -6,7 +6,6 @@
 class ModelObject
 {
 public:
-  typedef NVector<double, 3> Vector3D;
   typedef double Shape;
 
   // ctors
@@ -22,17 +21,17 @@ public:
   void Advance(double);
 
   // getters
-  const Vector3D Position() const;
-  const Vector3D Velocity() const;
-  const Vector3D Force() const;
-  const double   Mass() const;
-  const Shape    Shape() const;
+  const Vector3D position() const;
+  const Vector3D velocity() const;
+  const Vector3D force() const;
+  const double   mass() const;
+  const Shape    shape() const;
 
   // setters
-  void SetPosition(Vector3D);
-  void SetVelocity(Vector3D);
-  void SetForce(Vector3D);
-  void SetMass(double);
+  void set_position(Vector3D);
+  void set_velocity(Vector3D);
+  void set_force(Vector3D);
+  void set_mass(double);
   
 protected:
   Vector3D position_;

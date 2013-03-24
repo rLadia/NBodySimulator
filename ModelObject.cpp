@@ -12,7 +12,7 @@ ModelObject::ModelObject(
   Vector3D velocity, 
   Vector3D force, 
   double mass, 
-  double shape)
+  Shape shape)
   : position_(position), 
     velocity_(velocity), 
     force_(force), 
@@ -31,47 +31,47 @@ void ModelObject::Advance(double time)
 }
 
 // getters
-const ModelObject::Vector3D ModelObject::Position() const
+const Vector3D ModelObject::position() const
 {
   return position_;
 }
 
-const ModelObject::Vector3D ModelObject::Velocity() const
+const Vector3D ModelObject::velocity() const
 {
   return velocity_;
 }
-const ModelObject::Vector3D ModelObject::Force() const
+const Vector3D ModelObject::force() const
 {
   return force_;
 }
 
-const double   ModelObject::Mass() const
+const double ModelObject::mass() const
 {
   return mass_;
 }
 
-const double   ModelObject::Shape() const 
+const ModelObject::Shape ModelObject::shape() const 
 {
   return shape_;
 }
 
 // setters
-void ModelObject::SetPosition(Vector3D position) 
+void ModelObject::set_position(Vector3D position) 
 {
   position_ = position;
 }
 
-void ModelObject::SetVelocity(Vector3D velocity)
+void ModelObject::set_velocity(Vector3D velocity)
 {
   velocity_ = velocity;
 }
 
-void ModelObject::SetForce(Vector3D force)
+void ModelObject::set_force(Vector3D force)
 {
   force_ = force;
 }
 
-void ModelObject::SetMass(double mass)
+void ModelObject::set_mass(double mass)
 {
   mass_ = mass;
 }
