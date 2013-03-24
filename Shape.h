@@ -1,12 +1,26 @@
 #ifndef LADIA_NBODYSIMULATOR_SHAPE_H
 #define LADIA_NBODYSIMULATOR_SHAPE_H
 
-class Shape
-{
-public:
-  Shape();
-private:
+#include "nvector.h"
 
-};
+namespace Shape
+{
+  struct Point
+  {
+    Vector2D center;
+  };
+
+  struct Circle
+  {
+    Vector2D center;
+    double radius;
+  };
+
+  struct Square
+  {
+    Vector2D center;
+    double length;
+  };
+}
 
 #endif
