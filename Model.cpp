@@ -39,8 +39,8 @@ void Model::HandleOverlaps(ObjectList &objects)
 
 bool Model::IsOverlapping(ModelObject &left, ModelObject &right)
 {
-  Shape::Sphere circle_left = { left.position(), left.shape() };
-  Shape::Sphere circle_right = { right.position(), right.shape() };
+  Shape::Sphere circle_left = { left.position(), left.radius() };
+  Shape::Sphere circle_right = { right.position(), right.radius() };
 
-  return (Overlap::isOverlapping(circle_left, circle_right));
+  return (Overlap::IsOverlapping(circle_left, circle_right));
 }
