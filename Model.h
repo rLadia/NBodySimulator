@@ -25,7 +25,8 @@ public:
   Model();
 
   // updates state of model after the given time interval has passed
-  // The objects can have their positions modified or be removed from the list
+  // The objects can have their position, velocity or force modified 
+  // and may be removed from the list
   void Update(ObjectList &, double);
 
 private:
