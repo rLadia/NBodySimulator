@@ -1,6 +1,11 @@
 #include "Model.h"
 #include "nbodysimulator.h"
 
+Model::Model()
+{
+
+}
+
 void Model::Update(ObjectList &objects, const double time)
 {
   UpdateGravitationalForces(objects, time);
