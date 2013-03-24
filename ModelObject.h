@@ -7,12 +7,13 @@ class ModelObject
 {
 public:
   typedef NVector<double, 3> Vector3D;
+  typedef double Shape;
 
   // ctors
   ModelObject();
 
-  // position, velocity, force, mass, radius
-  ModelObject(Vector3D, Vector3D, Vector3D, double, double);
+  // position, velocity, force, mass, shape
+  ModelObject(Vector3D, Vector3D, Vector3D, double, Shape);
 
   // Modifies the position and velocity using the kinematic equations of motion
   // where acceleration is equal to force divided by mass
@@ -25,7 +26,7 @@ public:
   const Vector3D Velocity() const;
   const Vector3D Force() const;
   const double   Mass() const;
-  const double   Radius() const;
+  const Shape    Shape() const;
 
   // setters
   void SetPosition(Vector3D);
@@ -39,7 +40,7 @@ protected:
   Vector3D force_;
 
   double mass_;
-  double radius_; // *TODO* generalize to shape
+  Shape shape_; // *TODO* generalize to shape
 };
 
 #endif
