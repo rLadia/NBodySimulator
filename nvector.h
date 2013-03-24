@@ -1,6 +1,8 @@
 #ifndef LADIA_CSS342_NVECTOR_H
 #define LADIA_CSS342_NVECTOR_H
 
+#include <cmath>
+
 // Represents an n-dimensional Vector
 template<typename T, int D> //type, dimensions
 class NVector
@@ -18,6 +20,9 @@ class NVector
   // returns the dot product of the vector
   // x^2 + y^2 + z^2
   static T dotProduct(const NVector<T, D> &, const NVector<T, D> &);
+
+  // returns the distance between the two vectors
+  static double Distance(const NVector<T, D> &, const NVector<T, D> &);
 
   // getters
   T x() const;
@@ -78,7 +83,8 @@ NVector<T, D>::NVector(const T x, const T y, const T z)
 }
 
 template<typename T, int D>
-void NVector<T, D>::transform(const NVector<T, D>& NVector) {
+void NVector<T, D>::transform(const NVector<T, D>& NVector) 
+{
   for(int i = 0; i < D; ++i)
     val_[i] += NVector[i];
 }
@@ -86,11 +92,24 @@ void NVector<T, D>::transform(const NVector<T, D>& NVector) {
 // returns the dot product of the vector
 // x^2 + y^2 + z^2
 template<typename T, int D>
-T NVector<T, D>::dotProduct(const NVector<T, D>& NVector1, const NVector<T, D>& NVector2) {
+T NVector<T, D>::dotProduct(const NVector<T, D>& NVector1, const NVector<T, D>& NVector2) 
+{
   T sum = 0;
   for(int i = 0; i < D; ++i)
     sum += NVector1.val_[i] * NVector2.val_[i];
   return sum;
+}
+
+template<typename T, int D>
+double NVector<T, D>::Distance(const NVector<T, D>& left, const NVector<T, D>& right) 
+{
+  double sum = 0;
+  for(int i = 0; i < D; ++i) {
+    T a1 = left.val_[i];
+    T a2 = right.val_[i];
+    sum += (a2 - a1);
+  }
+  return std::sqrt(sum);
 }
 
 //getters
