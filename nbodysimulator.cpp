@@ -16,14 +16,12 @@ NBodySimulator::NBodySimulator()
 
 void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated)
 {
-  Simulate(bodies, time_simulated, NULL);
+  Simulate(bodies, time_simulated, nullptr);
 }
 
 void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated, CallBack call_back)
 {
   double elapsed;
-  if(call_back != NULL)
-    call_back(bodies);
 
   for(elapsed = 0; 
     elapsed <= time_simulated - time_interval_; 
@@ -45,7 +43,7 @@ void NBodySimulator::AdvanceAndCallback(BodyList &bodies, const double time, Cal
 
   for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
     i->Advance(time_interval_);
-  if(call_back != NULL)
+  if(call_back != nullptr)
     call_back(bodies);
 }
 
