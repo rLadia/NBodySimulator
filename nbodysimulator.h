@@ -2,12 +2,12 @@
 #define LADIA_CSS342_NBODYSIMULATOR_H
 
 #include <vector>
-#include "simulatedbody.h"
+#include "ModelObject.h"
 
 // Simulates the motion of 3d bodies through space
 class NBodySimulator {
 public:
-  typedef SimulatedBody* Body;
+  typedef ModelObject Body;
   typedef std::vector<Body> BodyList;
 
   static const double kDefaultTimeInterval;
@@ -15,7 +15,7 @@ public:
 
   // Simulates the effects of gravity on the given list of spheres over the 
   // given time period.
-  void Simulate(BodyList *, const double);
+  void Simulate(BodyList &, const double);
 
   // time interval used to update forces
   NBodySimulator(const double);
@@ -36,11 +36,7 @@ private:
   void calculateForcesBetweenBodies(BodyList &);
 
   // Adds the gravitational force between each body to each body's net force
-  void addForcesBetween(SimulatedBody &, SimulatedBody &);
-  
-  // Advances the simulation by the time period given
-  // Each body will move according to its current velocity and the net force
-  void advance(const double); 
+  void addForcesBetween(ModelObject &, ModelObject &);
 };
 
 #endif

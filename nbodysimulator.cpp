@@ -6,8 +6,6 @@
 
 const double NBodySimulator::kDefaultTimeInterval = 0.01;
 
-typedef SimulatedBody* BodyPtr;
-
 NBodySimulator::NBodySimulator(const double time_interval) 
   : time_interval_(time_interval)
 {}
@@ -16,25 +14,25 @@ NBodySimulator::NBodySimulator()
   : time_interval_(kDefaultTimeInterval)
 {}
 
-void NBodySimulator::Simulate(BodyList* bodies, const double time_simulated)
+void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated)
 {
   double elapsed;
   for(elapsed = 0; 
     elapsed <= time_simulated - time_interval_; 
     elapsed += time_interval_) {
 
-    updateAllForces(*bodies);
+    updateAllForces(bodies);
 
-    for(BodyList::iterator i = bodies->begin(); i != bodies->end(); ++i)
-      (*i)->advance(time_interval_);
+    for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
+      i->Advance(time_interval_);
   }
 
   // simulates any time remaining
   if(elapsed > time_simulated && time_simulated >= 0) {
-    updateAllForces(*bodies);
+    updateAllForces(bodies);
 
-    for(BodyList::iterator i = bodies->begin(); i != bodies->end(); ++i)
-      (*i)->advance(elapsed - time_interval_);
+    for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
+      i->Advance(elapsed - time_interval_);
   }
 }
 
@@ -49,7 +47,7 @@ void NBodySimulator::updateAllForces(BodyList &bodies)
 void NBodySimulator::resetForces(BodyList &bodies) 
 {
   for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
-    (*i)->setForce(Vector3(0,0,0));
+    i->set_force(Vector3(0,0,0));
 }
 
 
@@ -64,19 +62,19 @@ void NBodySimulator::calculateForcesBetweenBodies(BodyList &bodies)
 
     // bodies do not apply a force on themselves
     for(j++; j != bodies.end(); ++j) {
-      addForcesBetween(**i, **j);
+      addForcesBetween(*i, *j);
     }
   };
 }
 
 
 // Adds the force exerted on each body to each body's net force 
-void NBodySimulator::addForcesBetween(SimulatedBody &b1, SimulatedBody &b2)
+void NBodySimulator::addForcesBetween(ModelObject &b1, ModelObject &b2)
 {
-  Gravity::PointMass m1 = { b1.getMass(), b1.getCenter() };
-  Gravity::PointMass m2 = { b2.getMass(), b2.getCenter() };
+  Gravity::PointMass m1 = { b1.mass(), b1.position() };
+  Gravity::PointMass m2 = { b2.mass(), b2.position() };
 
   Vector3 force = Gravity::force(m1, m2, kGravity);
-  b1.setForce(b1.getForce() + force);
-  b2.setForce(b2.getForce() + force * -1);
+  b1.set_force(b1.force() + force);
+  b2.set_force(b2.force() + force * -1);
 }

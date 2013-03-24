@@ -18,12 +18,12 @@ bool NBodySimulatorUtil::createBodiesFromFile(BodyList &bodies, std::ifstream &f
     if(file.fail())
        break;
     
-    NBodySimulator::Body body(new SimulatedBody(
+    NBodySimulator::Body body(
       Vector3(x, y, z), 
-      r, 
       Vector3(vx, vy, vz), 
       Vector3(0,0,0),
-      r));
+      r, 
+      r);
     bodies.push_back(body);
   } while(file.good());
   
@@ -51,8 +51,8 @@ void NBodySimulatorUtil::PrintPosition(BodyList &bodies, double elapsed)
   
       std::vector<std::string> row; 
       row.push_back(lexical_cast<string, int>(index));
-      row.push_back(lexical_cast<string, double>((*i)->getCenter().x()));
-      row.push_back(lexical_cast<string, double>((*i)->getCenter().y()));
+      row.push_back(lexical_cast<string, double>(i->position().x()));
+      row.push_back(lexical_cast<string, double>(i->position().y()));
       index ++;
       table.LogTableRow(row);
     }
