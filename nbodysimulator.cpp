@@ -17,64 +17,36 @@ NBodySimulator::NBodySimulator()
 void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated)
 {
   Simulate(bodies, time_simulated, NULL);
-  /*
-  double elapsed;
-  for(elapsed = 0; 
-    elapsed <= time_simulated - time_interval_; 
-    elapsed += time_interval_) {
-
-    UpdateAllForces(bodies);
-
-    for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
-      i->Advance(time_interval_);
-  }
-
-  // simulates any time remaining
-  if(elapsed > time_simulated && time_simulated >= 0) {
-    UpdateAllForces(bodies);
-
-    for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
-      i->Advance(elapsed - time_interval_);
-  }
-  */
 }
 
-void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated, EventCallBack event_call_back)
+void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated, CallBack call_back)
 {
   double elapsed;
-  if(event_call_back != NULL)
-    event_call_back(bodies);
+  if(call_back != NULL)
+    call_back(bodies);
 
   for(elapsed = 0; 
     elapsed <= time_simulated - time_interval_; 
     elapsed += time_interval_) {
 
-    UpdateAllForces(bodies);
-
-    for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
-      i->Advance(time_interval_);
-    if(event_call_back != NULL)
-      event_call_back(bodies);
+    AdvanceAndCallback(bodies, time_interval_, call_back);
   }
 
   // simulates any time remaining
   if(elapsed > time_simulated && time_simulated >= 0) {
-    UpdateAllForces(bodies);
-
-    for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
-      i->Advance(elapsed - time_interval_);
-
-    if(event_call_back != NULL)
-      event_call_back(bodies);
+    AdvanceAndCallback(bodies, elapsed - time_interval_, call_back);
   }
 }
 
-
-// Updates the instantaneous force exerted on all of the simulated bodies
-void NBodySimulator::UpdateAllForces(BodyList &bodies)
+void NBodySimulator::AdvanceAndCallback(BodyList &bodies, const double time, CallBack call_back)
 {
-  ResetForces(bodies); //start from 0
+  ResetForces(bodies);
   CalculateForcesBetweenBodies(bodies);
+
+  for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
+    i->Advance(time_interval_);
+  if(call_back != NULL)
+    call_back(bodies);
 }
 
 // set the forces of each simulated body to 0

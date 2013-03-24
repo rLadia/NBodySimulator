@@ -9,16 +9,16 @@ class NBodySimulator {
 public:
   typedef ModelObject Body;
   typedef std::vector<Body> BodyList;
-  typedef void (*EventCallBack)(BodyList&);
+  typedef void (*CallBack)(BodyList&);
 
   static const double kDefaultTimeInterval;
   static const double kDefaultGravity;
 
   // Simulates the effects of gravity on the given list of objects over the 
-  // given time period. 
+  // given time period. If a callback function is specified, that function is
+  // called at the beginning of Simulate and after each simulation step
   void Simulate(BodyList &, const double);
-
-  void Simulate(BodyList &, const double, EventCallBack);
+  void Simulate(BodyList &, const double, CallBack);
 
   // Calculates the instantaneous forces exerted on each body by every other
   // body and adds that force to the body's force member
@@ -31,16 +31,17 @@ public:
 private:
   double time_interval_;
   double gravity_;
+
   // Sets the net force of each simulated body to 0
   void ResetForces(BodyList &);
 
-  // Updates the net instantaneous force exerted on each simulated body
-  // There are gravitational forces acting between each body and from
-  // black holes. The black spheres are not affected by gravity.
-  void UpdateAllForces(BodyList &);
+  // Recalculates the forces acting on each body, advances each object the 
+  // provided time period and calls the callback function with the provided 
+  // list
+  void AdvanceAndCallback(BodyList &, const double, CallBack);
 
   // Adds the gravitational force between each body to each body's net force
-  void AddForcesBetween(ModelObject &, ModelObject &);
+  void AddForcesBetween(Body &, Body &);
 };
 
 #endif
