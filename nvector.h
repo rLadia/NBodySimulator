@@ -51,6 +51,8 @@ class NVector
 
 typedef NVector<double, 3> Vector3;
 typedef NVector<double, 3> Vector3D;
+typedef NVector<double, 2> Vector2D;
+
 
 template<typename T, int D>
 NVector<T, D>::NVector() 
