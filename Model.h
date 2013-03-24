@@ -11,6 +11,7 @@ with each other.
 */
 
 #include <vector>
+#include <list>
 #include "ModelObject.h"
 
 #ifndef LADIA_NBODYSIMULATOR_MODEL_H
@@ -28,7 +29,12 @@ public:
   void Update(ObjectList &, double);
 
 private:
-  ObjectList objects_;
+  // calculates the gravitational forces between each object
+  // and adds it to their force property
+  void UpdateGravitationalForces(ObjectList &);
+
+  // Removes objects that are overlapping from the list
+  void HandleOverlaps(ObjectList &);
 };
 
 #endif
