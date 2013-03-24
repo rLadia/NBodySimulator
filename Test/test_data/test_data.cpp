@@ -5,9 +5,6 @@
 
 const double elapsed = 1.0;
 
-typedef NBodySimulator::Body     Body;
-typedef NBodySimulator::BodyList BodyList;
-
 void NBodySimulatorTestSuite::TestData() 
 {
   NBodySimulator simulation;
