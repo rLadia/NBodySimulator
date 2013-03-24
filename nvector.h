@@ -50,6 +50,7 @@ class NVector
 #include <cassert>
 
 typedef NVector<double, 3> Vector3;
+typedef NVector<double, 3> Vector3D;
 
 template<typename T, int D>
 NVector<T, D>::NVector() 
