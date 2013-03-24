@@ -7,15 +7,13 @@
 namespace Overlap 
 {
   //return: true if the spheres are overlapping
+  bool isOverlapping(Shape::Sphere, Shape::Sphere);
+
+  //return: true if the spheres are overlapping
   bool isOverlapping(Shape::Circle, Shape::Circle);
 
   // return: true if the point is contained within the sphere
   bool isOverlapping(Shape::Circle, Shape::Point);
-
-  //return: the distance between two spheres using the distance formula
-  //  d = sqrt( (xi2 - xi1)^2 )
-  double distance(Vector3D, Vector3D);
-  double distance(Vector2D, Vector2D);
 }
 
 #endif
