@@ -1,4 +1,4 @@
-#include "ModelObject.h"
+#include "modelobject.h"
 #include <cmath>
 
 // default ctor
