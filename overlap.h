@@ -7,13 +7,13 @@
 namespace Overlap 
 {
   //return: true if the spheres are overlapping
-  bool isOverlapping(Shape::Sphere, Shape::Sphere);
+  bool IsOverlapping(Shape::Sphere, Shape::Sphere);
 
   //return: true if the spheres are overlapping
-  bool isOverlapping(Shape::Circle, Shape::Circle);
+  bool IsOverlapping(Shape::Circle, Shape::Circle);
 
   // return: true if the point is contained within the sphere
-  bool isOverlapping(Shape::Circle, Shape::Point);
+  bool IsOverlapping(Shape::Circle, Shape::Point);
 }
 
 #endif
