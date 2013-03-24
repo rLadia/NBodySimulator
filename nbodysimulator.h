@@ -2,7 +2,7 @@
 #define LADIA_CSS342_NBODYSIMULATOR_H
 
 #include <vector>
-#include "ModelObject.h"
+#include "modelobject.h"
 
 // Simulates the motion of 3d bodies through space
 class NBodySimulator {
@@ -16,7 +16,7 @@ public:
 
   // Simulates the effects of gravity on the given list of objects over the 
   // given time period. If a callback function is specified, that function is
-  // called at the beginning of Simulate and after each simulation step
+  // called after each simulation step
   void Simulate(BodyList &, const double);
   void Simulate(BodyList &, const double, CallBack);
 
