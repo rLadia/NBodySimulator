@@ -3,7 +3,7 @@
 
 // default ctor
 ModelObject::ModelObject()
-  : position_(0, 0, 0), velocity_(0, 0, 0), force_(0, 0, 0), mass_(0), shape_(0)
+  : position_(0, 0, 0), velocity_(0, 0, 0), force_(0, 0, 0), mass_(0), radius_(0)
 {}
 
 // position, velocity, force, mass, radius
@@ -12,12 +12,12 @@ ModelObject::ModelObject(
   Vector3D velocity, 
   Vector3D force, 
   double mass, 
-  Shape shape)
+  double radius)
   : position_(position), 
     velocity_(velocity), 
     force_(force), 
     mass_(mass), 
-    shape_(shape)
+    radius_(radius)
 {}
 
 void ModelObject::Advance(double time)
@@ -50,9 +50,9 @@ const double ModelObject::mass() const
   return mass_;
 }
 
-const ModelObject::Shape ModelObject::shape() const 
+const double ModelObject::radius() const 
 {
-  return shape_;
+  return radius_;
 }
 
 // setters
