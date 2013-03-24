@@ -9,7 +9,7 @@ namespace Gravity {
   static const double G = 6.67398e-11;
 
   struct PointMass {
-    int mass;
+    double mass;
     NVector<double, 3> location;
   };
 
