@@ -36,6 +36,8 @@ private:
 
   // Removes objects that are overlapping from the list
   void HandleOverlaps(ObjectList &);
+
+  bool IsOverlapping(ModelObject &, ModelObject &);
 };
 
 #endif
