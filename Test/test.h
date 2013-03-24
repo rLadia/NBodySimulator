@@ -2,6 +2,7 @@
 #define LADIA_NBODYSIMULATOR_TEST_H
 
 #include "../nbodysimulator.h"
+#include "../Model.h"
 
 namespace NBodySimulatorTestSuite 
 {

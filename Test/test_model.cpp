@@ -7,15 +7,16 @@ const double elapsed = 7.0;
 
 void NBodySimulatorTestSuite::TestModel() 
 {
-  NBodySimulator simulation;
-  NBodySimulator::BodyList bodies;
-
+  
+  Model model;
+  Model::ObjectList bodies;
+  
   NBodySimulatorUtil::InitBodies(bodies);
 
   std::cout << "\n--- Program Start ---\n";
   NBodySimulatorUtil::PrintPosition(bodies, 0);
   
-  simulation.Simulate(bodies, elapsed);
+  model.Update(bodies, elapsed);
 
   std::cout << "\n--- Simulation Complete ---\n";
   NBodySimulatorUtil::PrintPosition(bodies, elapsed);
