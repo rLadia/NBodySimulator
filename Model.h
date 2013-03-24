@@ -21,12 +21,17 @@ class Model
 {
 public:
   typedef std::vector<ModelObject> ObjectList;
+  static const double kTimeInterval; // default time interval used for calculations
 
   Model();
 
-  // updates state of model after the given time interval has passed
+  // Updates the model to simulate the passing of a period of time. The time
+  // interval given determines how accurate the simulation is.
   // The objects can have their position, velocity or force modified 
-  // and may be removed from the list
+  // and are removed from the list if they overlap with another object
+  void Update(ObjectList &, const double, const double);
+
+  // calls update with default time interval
   void Update(ObjectList &, const double);
 
 private:
@@ -35,9 +40,9 @@ private:
   void UpdateGravitationalForces(ObjectList &, const double);
 
   // Removes objects that are overlapping from the list
-  void HandleOverlaps(ObjectList &);
+  static void HandleOverlaps(ObjectList &);
 
-  bool IsOverlapping(ModelObject &, ModelObject &);
+  static bool IsOverlapping(ModelObject &, ModelObject &);
 };
 
 #endif
