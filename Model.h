@@ -27,12 +27,12 @@ public:
   // updates state of model after the given time interval has passed
   // The objects can have their position, velocity or force modified 
   // and may be removed from the list
-  void Update(ObjectList &, double);
+  void Update(ObjectList &, const double);
 
 private:
   // calculates the gravitational forces between each object
-  // and adds it to their force property
-  void UpdateGravitationalForces(ObjectList &);
+  // and adds it to their force member
+  void UpdateGravitationalForces(ObjectList &, const double);
 
   // Removes objects that are overlapping from the list
   void HandleOverlaps(ObjectList &);
