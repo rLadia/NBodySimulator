@@ -1,0 +1,6 @@
+# Directory to hold temporary o files 
+
+#ignore all files in this dir...
+*
+#... except for this one.
+!.gitignore

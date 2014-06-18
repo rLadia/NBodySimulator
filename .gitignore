@@ -1,3 +1,6 @@
+# Test executable
+RunTests
+
 # Utilities
 *.py
 
