@@ -145,7 +145,8 @@ T& NVector<T, D>::operator[](int index)
 // pre: the given index is within the range of dimensions of the vector
 template<typename T, int D>
 const T NVector<T, D>::operator[](const int index) const {
-  assert(("Index out of bounds", index >= 0 && index < D));
+  // Index out of bounds
+  assert(index >= 0 && index < D);
   return val_[index];
 }
 
@@ -157,13 +158,15 @@ void NVector<T, D>::setX(const T x) {
 
 template<typename T, int D>
 void NVector<T, D>::setY(const T y) {
-  assert(("y not defined with NVector size less than 2", D >= 2));
+  // y not defined with NVector size less than 2
+  assert(D >= 2);
   val_[1] = y;
 }
 
 template<typename T, int D>
 void NVector<T, D>::setZ(const T z) {
-  assert(("z not defined with NVector size less than 3", D >= 3));
+  // z not defined with NVector size less than 3
+  assert(D >= 3);
   val_[2] = z;
 }
 
