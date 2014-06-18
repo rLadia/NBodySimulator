@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 
-class TableLogger 
+class TableLogger
 {
 public:
   enum Justification {

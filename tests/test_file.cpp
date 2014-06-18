@@ -10,7 +10,7 @@ using std::string;
 typedef NBodySimulator::Body Body;
 typedef NBodySimulator::BodyList BodyList;
 
-void NBodySimulatorTestSuite::TestFile() 
+void NBodySimulatorTestSuite::TestFile()
 {
   NBodySimulator simulation;
   NBodySimulator::BodyList bodies;
@@ -23,7 +23,7 @@ void NBodySimulatorTestSuite::TestFile()
   // logs initial state
   std::cout << "\n--- Program Start ---\n";
   NBodySimulatorUtil::PrintPosition(bodies, 0);
-  
+
   // run the simulation for 2 seconds
   double time = 2;
   simulation.Simulate(bodies, 1);

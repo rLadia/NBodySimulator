@@ -3,14 +3,14 @@
 
 // returns the gravitational force between two point masses
 // default value for the gravitational constant
-NVector<double, 3> Gravity::force(PointMass m1, PointMass m2) 
+NVector<double, 3> Gravity::force(PointMass m1, PointMass m2)
 {
   return force(m1, m2, Gravity::G);
 }
 
 // returns the gravitational force between two point masses
 // using a custom value for the gravitational constant
-NVector<double, 3> Gravity::force(PointMass m1, PointMass m2, const double g_constant) 
+NVector<double, 3> Gravity::force(PointMass m1, PointMass m2, const double g_constant)
 {
   // direction vector
   NVector<double, 3> direction = m2.location - m1.location;

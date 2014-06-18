@@ -2,11 +2,11 @@
 Interface for initializing and retreiving updates from the simulation model.
 
 The user gives the model information about the initial conditions and time
-elapsed. (later on, any additional input that comes from the user). The model 
-calculates the effect that the initial conditions have on the model and 
+elapsed. (later on, any additional input that comes from the user). The model
+calculates the effect that the initial conditions have on the model and
 returns the data in a parseable fashion.
 
-References the rules for determining how the objects in the model interact 
+References the rules for determining how the objects in the model interact
 with each other.
 */
 
@@ -27,7 +27,7 @@ public:
 
   // Updates the model to simulate the passing of a period of time. The time
   // interval given determines how accurate the simulation is.
-  // The objects can have their position, velocity or force modified 
+  // The objects can have their position, velocity or force modified
   // and are removed from the list if they overlap with another object
   void Update(ObjectList &, const double, const double);
 

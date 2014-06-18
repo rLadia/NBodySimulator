@@ -31,7 +31,7 @@ public:
   void set_velocity(Vector3D);
   void set_force(Vector3D);
   void set_mass(double);
-  
+
 protected:
   Vector3D position_;
   Vector3D velocity_;

@@ -12,17 +12,17 @@ using std::string;
 typedef NBodySimulator::Body Body;
 typedef NBodySimulator::BodyList BodyList;
 
-void draw(BodyList& bodies) 
+void draw(BodyList& bodies)
 {
   Display display(1000,1000);
   NBodySimulator simulation;
 
   typedef Display::Point Point;
   std::vector<Display::Point> points;
-   
+
   // runs for 50 seconds
   for(int i = 0; i < 50000; ++i) {
-    
+
     if(i % 250 == 0) { // once a second
       points.clear();
       BOOST_FOREACH(Body b, bodies) {
@@ -31,13 +31,13 @@ void draw(BodyList& bodies)
         points.push_back(Point(x, y));
       }
       display.Draw(points);
-    } 
+    }
     simulation.Simulate(bodies, 0.01);
   }
 }
 
-void NBodySimulatorTestSuite::TestDraw() 
-{  
+void NBodySimulatorTestSuite::TestDraw()
+{
   // reads the initial state
   NBodySimulator::BodyList bodies;
   std::ifstream file(NBodySimulatorTestSuite::kFileName);

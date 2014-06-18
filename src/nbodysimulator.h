@@ -14,7 +14,7 @@ public:
   static const double kDefaultTimeInterval;
   static const double kDefaultGravity;
 
-  // Simulates the effects of gravity on the given list of objects over the 
+  // Simulates the effects of gravity on the given list of objects over the
   // given time period. If a callback function is specified, that function is
   // called after each simulation step
   void Simulate(BodyList &, const double);
@@ -35,8 +35,8 @@ private:
   // Sets the net force of each simulated body to 0
   void ResetForces(BodyList &);
 
-  // Recalculates the forces acting on each body, advances each object the 
-  // provided time period and calls the callback function with the provided 
+  // Recalculates the forces acting on each body, advances each object the
+  // provided time period and calls the callback function with the provided
   // list
   void AdvanceAndCallback(BodyList &, const double, CallBack);
 

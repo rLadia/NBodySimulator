@@ -1,6 +1,6 @@
 #include "test.h"
 
-int main() 
+int main()
 {
   NBodySimulatorTestSuite::TestModel();
   NBodySimulatorTestSuite::TestData();

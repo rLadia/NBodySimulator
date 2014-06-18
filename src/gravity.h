@@ -3,7 +3,7 @@
 
 #include "nvector.h"
 
-// Namespace containing functions for calculating the gravitational force 
+// Namespace containing functions for calculating the gravitational force
 // between objects
 namespace Gravity {
   static const double G = 6.67398e-11;

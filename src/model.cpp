@@ -10,15 +10,15 @@ Model::Model()
 {}
 
 void Model::Update(
-  ObjectList &objects, 
+  ObjectList &objects,
   const double time_elapsed)
 {
   Update(objects, time_elapsed, kTimeInterval);
 }
 
 void Model::Update(
-  ObjectList &objects, 
-  const double time_simulated, 
+  ObjectList &objects,
+  const double time_simulated,
   const double time_interval)
 {
   NBodySimulator simulator(time_interval, NBodySimulator::kDefaultGravity);
@@ -40,10 +40,10 @@ void Model::HandleOverlaps(ObjectList &objects)
 
   while(i != objects.end()) {
     bool isErased = false;
-    
+
     ObjectList::iterator j = i;
     j ++; // do not compare to self
-    
+
     while(j != objects.end()) {
       if(IsOverlapping(*i, *j)) { // remove the objects from the list
         objects.erase(j);

@@ -8,15 +8,15 @@ ModelObject::ModelObject()
 
 // position, velocity, force, mass, radius
 ModelObject::ModelObject(
-  Vector3D position, 
-  Vector3D velocity, 
-  Vector3D force, 
-  double mass, 
+  Vector3D position,
+  Vector3D velocity,
+  Vector3D force,
+  double mass,
   double radius)
-  : position_(position), 
-    velocity_(velocity), 
-    force_(force), 
-    mass_(mass), 
+  : position_(position),
+    velocity_(velocity),
+    force_(force),
+    mass_(mass),
     radius_(radius)
 {}
 
@@ -50,13 +50,13 @@ const double ModelObject::mass() const
   return mass_;
 }
 
-const double ModelObject::radius() const 
+const double ModelObject::radius() const
 {
   return radius_;
 }
 
 // setters
-void ModelObject::set_position(Vector3D position) 
+void ModelObject::set_position(Vector3D position)
 {
   position_ = position;
 }

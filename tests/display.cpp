@@ -10,7 +10,7 @@ void Display::Draw(const std::vector<Point> &points)
   system("cls"); // *TODO* replace with portable method
 
   for(int i = 0; i < view_width_; ++i)
-    for(int j = 0; j < view_height_; ++j) 
+    for(int j = 0; j < view_height_; ++j)
       grid_[i][j] = false;
 
   BOOST_FOREACH(const Point& p, points) {
@@ -28,7 +28,7 @@ void Display::Draw(const std::vector<Point> &points)
     for(int j = 0; j < view_width_; ++j) {
       if(grid_[j][i])
         std::cout << "O";
-      else 
+      else
         std::cout << " ";
     }
     std::cout << "|\n";
@@ -36,11 +36,11 @@ void Display::Draw(const std::vector<Point> &points)
 
   std::cout << top_border << std::endl;
 }
-  
+
 // initialize with height and width
 Display::Display(const int height, const int width)
   :model_height_(height), model_width_(width), view_width_(45), view_height_(45)
-{  
+{
   boost::array<array_type::index, 2> shape = {{ view_width_, view_height_ }};
   grid_.resize(shape);
 }
