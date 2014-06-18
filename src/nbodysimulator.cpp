@@ -6,11 +6,11 @@
 const double NBodySimulator::kDefaultTimeInterval = 0.01;
 const double NBodySimulator::kDefaultGravity = 10.0;
 
-NBodySimulator::NBodySimulator(const double time_interval, const double gravity) 
+NBodySimulator::NBodySimulator(const double time_interval, const double gravity)
   : time_interval_(time_interval), gravity_(gravity)
 {}
 
-NBodySimulator::NBodySimulator() 
+NBodySimulator::NBodySimulator()
   : time_interval_(kDefaultTimeInterval), gravity_(kDefaultGravity)
 {}
 
@@ -23,8 +23,8 @@ void NBodySimulator::Simulate(BodyList &bodies, const double time_simulated, Cal
 {
   double elapsed;
 
-  for(elapsed = 0; 
-    elapsed <= time_simulated - time_interval_; 
+  for(elapsed = 0;
+    elapsed <= time_simulated - time_interval_;
     elapsed += time_interval_) {
 
     AdvanceAndCallback(bodies, time_interval_, call_back);
@@ -48,7 +48,7 @@ void NBodySimulator::AdvanceAndCallback(BodyList &bodies, const double time, Cal
 }
 
 // set the forces of each simulated body to 0
-void NBodySimulator::ResetForces(BodyList &bodies) 
+void NBodySimulator::ResetForces(BodyList &bodies)
 {
   for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i)
     i->set_force(Vector3(0,0,0));
@@ -57,11 +57,11 @@ void NBodySimulator::ResetForces(BodyList &bodies)
 
 // Calculates the instantaneous forces exerted on the simulated bodies
 // by each other simulated body
-void NBodySimulator::CalculateForcesBetweenBodies(BodyList &bodies) 
+void NBodySimulator::CalculateForcesBetweenBodies(BodyList &bodies)
 {
   BodyList::iterator i = bodies.begin();
 
-  for(i; i != bodies.end(); ++i) {
+  for(; i != bodies.end(); ++i) {
     BodyList::iterator j = i; // not necessary to start at beginning
     j ++; // bodies do not apply a force on themselves
     for(; j != bodies.end(); ++j) {
@@ -71,7 +71,7 @@ void NBodySimulator::CalculateForcesBetweenBodies(BodyList &bodies)
 }
 
 
-// Adds the force exerted on each body to each body's net force 
+// Adds the force exerted on each body to each body's net force
 void NBodySimulator::AddForcesBetween(ModelObject &b1, ModelObject &b2)
 {
   Gravity::PointMass m1 = { b1.mass(), b1.position() };
