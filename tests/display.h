@@ -3,15 +3,15 @@
 
 #include <vector>
 #include <boost/multi_array.hpp>
-#include "../nvector.h"
+#include "../src/nvector.h"
 
-class Display 
+class Display
 {
 public:
   typedef NVector<int, 2> Point;
 
   void Draw(const std::vector<Point> &);
-  
+
   // initialize with height and width
   Display(const int, const int);
 

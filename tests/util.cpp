@@ -2,10 +2,10 @@
 
 #include <iomanip>
 #include <boost/lexical_cast.hpp>
-#include "TableLogger.h"
+#include "tablelogger.h"
 
 // initializes the body data
-void NBodySimulatorUtil::InitBodies(BodyList &bodies) 
+void NBodySimulatorUtil::InitBodies(BodyList &bodies)
 {
   typedef NBodySimulator::Body Body;
 
@@ -18,10 +18,10 @@ void NBodySimulatorUtil::InitBodies(BodyList &bodies)
   );
 
   Body body2(
-    Vector3(20, 0, 0), 
-    Vector3(0, 0, 0), 
+    Vector3(20, 0, 0),
     Vector3(0, 0, 0),
-    1, 
+    Vector3(0, 0, 0),
+    1,
     1
   );
 
@@ -42,16 +42,16 @@ bool NBodySimulatorUtil::createBodiesFromFile(BodyList &bodies, std::ifstream &f
 
     if(file.fail())
        break;
-    
+
     NBodySimulator::Body body(
-      Vector3(x, y, z), 
-      Vector3(vx, vy, vz), 
+      Vector3(x, y, z),
+      Vector3(vx, vy, vz),
       Vector3(0,0,0),
-      r, 
+      r,
       r);
     bodies.push_back(body);
   } while(file.good());
-  
+
   return true;
 }
 
@@ -65,7 +65,7 @@ void NBodySimulatorUtil::PrintPosition(BodyList &bodies, double elapsed)
     header.push_back(std::make_pair("X-Position", TableLogger::kCenter));
     header.push_back(std::make_pair("Y-Position", TableLogger::kCenter));
 
-    std::string title = "Position at " + lexical_cast<string, double>(elapsed) + " seconds"; 
+    std::string title = "Position at " + lexical_cast<string, double>(elapsed) + " seconds";
 
     TableLogger table(title, header);
 
@@ -73,8 +73,8 @@ void NBodySimulatorUtil::PrintPosition(BodyList &bodies, double elapsed)
 
     int index = 0;
     for(BodyList::iterator i = bodies.begin(); i != bodies.end(); ++i) {
-  
-      std::vector<std::string> row; 
+
+      std::vector<std::string> row;
       row.push_back(lexical_cast<string, int>(index));
       row.push_back(lexical_cast<string, double>(i->position().x()));
       row.push_back(lexical_cast<string, double>(i->position().y()));

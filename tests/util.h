@@ -2,9 +2,9 @@
 #define LADIA_NBODYSIMULATOR_UTILITIES_H
 
 #include <fstream>
-#include "../nbodysimulator.h"
+#include "../src/nbodysimulator.h"
 
-namespace NBodySimulatorUtil {  
+namespace NBodySimulatorUtil {
   typedef NBodySimulator::BodyList BodyList;
 
   void PrintPosition(BodyList &, double);

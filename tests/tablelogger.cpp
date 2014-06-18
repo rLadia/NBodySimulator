@@ -1,4 +1,4 @@
-#include "TableLogger.h"
+#include "tablelogger.h"
 #include <boost/foreach.hpp>
 #include <cassert>
 #include <iomanip>
@@ -22,7 +22,7 @@ void TableLogger::LogTableHead()
 
 void TableLogger::LogTableRow(std::vector<std::string> data)
 {
-  assert(("Row data does not align with available columns.", 
+  assert(("Row data does not align with available columns.",
     data.size() == header_.size()));
 
   using std::cout;
@@ -33,9 +33,9 @@ void TableLogger::LogTableRow(std::vector<std::string> data)
   cout << "\n";
 }
 
-std::string TableLogger::Center(const std::string &s, std::string::size_type length) 
+std::string TableLogger::Center(const std::string &s, std::string::size_type length)
 {
-  if(s.length() > length) 
+  if(s.length() > length)
     return s.substr(0, length);
 
   std::string result(length, ' ');
