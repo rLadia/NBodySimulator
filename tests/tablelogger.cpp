@@ -22,8 +22,8 @@ void TableLogger::LogTableHead()
 
 void TableLogger::LogTableRow(std::vector<std::string> data)
 {
-  assert(("Row data does not align with available columns.",
-    data.size() == header_.size()));
+  // Row data does not align with available columns
+  assert(data.size() == header_.size());
 
   using std::cout;
   for(std::size_t i = 0; i < data.size(); ++i) {

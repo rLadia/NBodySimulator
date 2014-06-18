@@ -10,6 +10,6 @@ namespace NBodySimulatorUtil {
   void PrintPosition(BodyList &, double);
   bool createBodiesFromFile(BodyList &, std::ifstream &);
   void InitBodies(BodyList &);
-};
+}
 
 #endif

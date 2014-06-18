@@ -20,8 +20,8 @@ private:
   int model_height_;
   int model_width_;
 
-  int view_height_;
   int view_width_;
+  int view_height_;
 
   typedef boost::multi_array<bool, 2> array_type;
 

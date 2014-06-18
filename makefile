@@ -17,7 +17,6 @@ test_src = display.cpp \
 					 main.cpp \
 					 tablelogger.cpp \
 					 test_data.cpp \
-					 test_file.cpp \
 					 test_model.cpp \
 					 util.cpp \
 
