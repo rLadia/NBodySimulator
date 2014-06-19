@@ -2,22 +2,25 @@
 #include <cmath>
 
 // default ctor
-ModelObject::ModelObject()
-  : position_(0, 0, 0), velocity_(0, 0, 0), force_(0, 0, 0), mass_(0), radius_(0)
+  ModelObject::ModelObject()
+: position_(0, 0, 0), velocity_(0, 0, 0), force_(0, 0, 0), mass_(0), radius_(0), index_(0), isDead_(false)
 {}
 
 // position, velocity, force, mass, radius
 ModelObject::ModelObject(
-  Vector3D position,
-  Vector3D velocity,
-  Vector3D force,
-  double mass,
-  double radius)
-  : position_(position),
-    velocity_(velocity),
-    force_(force),
-    mass_(mass),
-    radius_(radius)
+    Vector3D position,
+    Vector3D velocity,
+    Vector3D force,
+    double mass,
+    double radius,
+    int index)
+: position_(position),
+  velocity_(velocity),
+  force_(force),
+  mass_(mass),
+  radius_(radius),
+  index_(index),
+  isDead_(false)
 {}
 
 void ModelObject::Advance(double time)
@@ -32,46 +35,35 @@ void ModelObject::Advance(double time)
 
 // getters
 const Vector3D ModelObject::position() const
-{
-  return position_;
-}
+{ return position_; }
 
 const Vector3D ModelObject::velocity() const
-{
-  return velocity_;
-}
+{ return velocity_; }
+
 const Vector3D ModelObject::force() const
-{
-  return force_;
-}
+{ return force_; }
 
 const double ModelObject::mass() const
-{
-  return mass_;
-}
+{ return mass_; }
 
 const double ModelObject::radius() const
-{
-  return radius_;
-}
+{ return radius_; }
+
+const int ModelObject::index() const
+{ return index_; }
+
+const bool ModelObject::isDead() const
+{ return isDead_; }
 
 // setters
-void ModelObject::set_position(Vector3D position)
-{
-  position_ = position;
+void ModelObject::set_position(Vector3D position) {
+  position_.setX(position.x());
+  position_.setY(position.y());
 }
 
-void ModelObject::set_velocity(Vector3D velocity)
-{
-  velocity_ = velocity;
-}
+void ModelObject::set_velocity(Vector3D velocity) { velocity_ = velocity; }
+void ModelObject::set_force(Vector3D force) { force_ = force; }
+void ModelObject::set_mass(double mass) { mass_ = mass; }
+void ModelObject::set_index(int index) { index_ = index; }
+void ModelObject::kill() { isDead_ = true; }
 
-void ModelObject::set_force(Vector3D force)
-{
-  force_ = force;
-}
-
-void ModelObject::set_mass(double mass)
-{
-  mass_ = mass;
-}

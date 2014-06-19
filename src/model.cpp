@@ -10,16 +10,16 @@ Model::Model()
 {}
 
 void Model::Update(
-  ObjectList &objects,
-  const double time_elapsed)
+    ObjectList &objects,
+    const double time_elapsed)
 {
   Update(objects, time_elapsed, kTimeInterval);
 }
 
 void Model::Update(
-  ObjectList &objects,
-  const double time_simulated,
-  const double time_interval)
+    ObjectList &objects,
+    const double time_simulated,
+    const double time_interval)
 {
   NBodySimulator simulator(time_interval, NBodySimulator::kDefaultGravity);
   simulator.Simulate(objects, time_simulated, &Model::HandleOverlaps);
@@ -38,23 +38,23 @@ void Model::HandleOverlaps(ObjectList &objects)
 
   ObjectList::iterator i = objects.begin();
 
-  while(i != objects.end()) {
-    bool isErased = false;
+  for(i = objects.begin(); i != objects.end(); ++i) {
+    if (i->isDead())
+      continue;
 
     ObjectList::iterator j = i;
-    j ++; // do not compare to self
 
-    while(j != objects.end()) {
+    for(++j; j != objects.end(); ++j) {
+      if(j->isDead())
+        continue;
+
       if(IsOverlapping(*i, *j)) { // remove the objects from the list
-        objects.erase(j);
-        i = objects.erase(i);
-        isErased = true;
-        break; // inner loop is complete
-      } else
-        ++j;
+        i->kill();
+        j->kill();
+        break; // inner while loop is complete
+      }
     }
-    if(!isErased) // do not double increment
-      ++i;
+
   };
 }
 
@@ -65,3 +65,4 @@ bool Model::IsOverlapping(ModelObject &left, ModelObject &right)
 
   return (Overlap::IsOverlapping(circle_left, circle_right));
 }
+
